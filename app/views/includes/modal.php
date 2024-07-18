@@ -337,7 +337,7 @@ $supplier = $data['supplier'];
                                 <span class="input-group-text md-addon" for="brand_type"><i class="fa fa-tag"></i></span>
                             </div>
                             <select class="browser-default custom-select form-control" id="brand_type" name="brand_type">
-                                <option value="" style="color: #C3C3C3;" selected>Select Drug Bought...</option>
+                                <option value="" style="color: #C3C3C3;" selected>Select Product Bought...</option>
                                 <?php foreach ($brands as $key) : ?>
                                     <option value="<?php echo $key->id; ?>"><?php echo $key->brand_name; ?></option>
                                 <?php endforeach; ?>
@@ -347,19 +347,25 @@ $supplier = $data['supplier'];
                             <div class="input-group-append">
                                 <span class="input-group-text md-addon" for="no_bought"><i class="fa fa-calendar-plus-o"></i></span>
                             </div>
-                            <input type="number" class="form-control" onkeypress="checkint(event)" id="no_bought" name="no_bought" placeholder="How Many Drug Customer Buy" aria-label="no_bought" aria-describedby="no_bought">
+                            <input type="number" class="form-control" onkeypress="checkint(event)" id="no_bought" name="no_bought" placeholder="How Many Product Customer Buy" aria-label="no_bought" aria-describedby="no_bought">
                         </div>
                         <div class="md-form input-group">
                             <div class="input-group-append">
                                 <span class="input-group-text md-addon" for="days_to_consume"><i class="fa fa-asterisk"></i></span>
                             </div>
-                            <input type="number" class="form-control" id="days_to_consume" name="days_to_consume" placeholder="Days to Consume The Above Drug" aria-label="days_to_consume" aria-describedby="days_to_consume">
+                            <input type="number" class="form-control" id="days_to_consume" name="days_to_consume" placeholder="Days to Consume The Above Product" aria-label="days_to_consume" aria-describedby="days_to_consume">
                         </div>
                         <div class="md-form input-group">
                             <div class="input-group-append">
-                                <span class="input-group-text md-addon" for="buy_order_date"><i class="fa fa-calendar"></i></span>
+                                <span class="input-group-text md-addon" for="buy_order_date">Order Date</span>
                             </div>
                             <input type="date" class="form-control" id="buy_order_date" name="buy_order_date" placeholder="Last Order/Buying Date" aria-label="buy_order_date" aria-describedby="buy_order_date">
+                        </div>
+                        <div class="md-form input-group">
+                            <div class="input-group-append">
+                                <span class="input-group-text md-addon" for="next_order_date">Next Date</span>
+                            </div>
+                            <input type="date" class="form-control" id="next_order_date" name="next_order_date" placeholder="Next Order/Buying Date" aria-label="next_order_date" aria-describedby="next_order_date">
                         </div>
                         <div class="md-form input-group">
                             <div class="input-group-append">
@@ -526,6 +532,12 @@ $supplier = $data['supplier'];
                                 <span class="input-group-text md-addon" for="add_img">Add Image: </span>
                             </div>
                             <input type="file" class="form-control" readonly id="add_img" name="add_img" aria-describedby="add_img">
+                        </div>
+                        <div class="md-form input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text md-addon" for="barcode"><i class="fa fa-ticket"></i></span>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Barcode" id="barcode" name="barcode" aria-describedby="barcode">
                         </div>
                         <div class="modal-footer justify-content-center">
                             <button type="submit" class="btn btn-sm btn-danger animated bounce">Submit Data<i class="far fa-gem ml-1 text-white"></i></button>

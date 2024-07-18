@@ -3,49 +3,49 @@ require APPROOT . '/views/includes/navigation.php';
 $stdata = $data['stockavailable'];
 $cart = $data['orders'];
 // var_dump($cart); die();
-  $supplier = $data['supplier'];
+$supplier = $data['supplier'];
 
 ?>
 
 <style type="text/css">
-@media print {
-    #tbprint {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        font-size: 40px !important;
+    @media print {
+        #tbprint {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-size: 40px !important;
+        }
+
+        #imgpri {
+            width: 50;
+            height: 50;
+        }
+
+        #thprint {
+            width: auto;
+            height: auto;
+            margin: 0;
+            padding: 0;
+            font-size: 65px !important;
+        }
+
+        .modal .modal-dialog {
+            width: auto;
+            max-width: none;
+            height: auto;
+            margin: 0;
+        }
+
+        .modal .modal-content {
+            height: auto;
+            border: 10;
+            border-radius: 10;
+            font-size: 40px !important;
+        }
+
+
     }
-
-    #imgpri {
-        width: 50;
-        height: 50;
-    }
-
-    #thprint {
-        width: auto;
-        height: auto;
-        margin: 0;
-        padding: 0;
-        font-size: 65px !important;
-    }
-
-    .modal .modal-dialog {
-        width: auto;
-        max-width: none;
-        height: auto;
-        margin: 0;
-    }
-
-    .modal .modal-content {
-        height: auto;
-        border: 10;
-        border-radius: 10;
-        font-size: 40px !important;
-    }
-
-
-}
 </style>
 
 
@@ -63,11 +63,11 @@ $cart = $data['orders'];
 
                 <h4 class="mb-2 mb-sm-0 pt-1">
                     <?php
-          // var_dump($cart);
-          if($grpid == 1): ?>
-                    <span>Stock Page <i class="fa fa-check text-danger animated rotateIn"></i></span>
-                    <?php elseif($grpid == 2): ?>
-                    <span>Sell Page <i class="fa fa-check text-danger animated rotateIn"></i></span>
+                    // var_dump($cart);
+                    if ($grpid == 1) : ?>
+                        <span>Stock Page <i class="fa fa-check text-danger animated rotateIn"></i></span>
+                    <?php elseif ($grpid == 2) : ?>
+                        <span>Sell Page <i class="fa fa-check text-danger animated rotateIn"></i></span>
                     <?php endif; ?>
 
                 </h4>
@@ -96,9 +96,8 @@ $cart = $data['orders'];
                     <!--Card content-->
                     <div class="card-body">
                         <div class="row">
-                            <div class="<?=(($grpid == 2 && !empty($cart))?'col-7':'col-12') ?>">
-                                <table id="dtBasicExample" class="table table-striped table-bordered" cellspacing="0"
-                                    width="100%">
+                            <div class="<?= ((!empty($cart)) ? 'col-7' : 'col-12') ?>">
+                                <table id="dtBasicExample" class="table table-striped table-bordered" cellspacing="0" width="100%">
                                     <thead class="table-sm table-dark">
                                         <tr>
                                             <th class="th-sm">Image <i class="fa fa-sort ml-1"></i></th>
@@ -114,56 +113,43 @@ $cart = $data['orders'];
                                             </th>
                                             <th class="th-sm">Wholesale Price <i class="fa fa-sort ml-1"></i>
                                             </th>
-                                            <?php if($grpid == 1): ?>
-                                            <th class="th-sm">Action <i class="fa fa-sort ml-1"></i></th>
-                                            <?php elseif($grpid == 2): ?>
-                                            <th class="th-sm">Action <i class="fa fa-sort ml-1"></i></th>
+                                            <?php if ($grpid == 1) : ?>
+                                                <th class="th-sm">Action <i class="fa fa-sort ml-1"></i></th>
+                                            <?php elseif ($grpid == 2) : ?>
+                                                <th class="th-sm">Action <i class="fa fa-sort ml-1"></i></th>
                                             <?php endif; ?>
 
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php                
-                foreach ($stdata as $key): 
-                  ?>
-                                        <tr>
-                                            <td><img src="<?=(empty($key->item_pic)?URLROOT.'/public/img/lightbox/preloader.gif':URLROOT.'/public/img/products/'.$key->item_pic);?>"
-                                                    width="50" height="50" alt="img">
-                                            </td>
-                                            <td><?=$key->cat_type_name; ?></td>
-                                            <td><?=$key->brand_name; ?></td>
-                                            <td><?=(empty($key->type_name)?'Sachet(s)':$key->type_name);?></td>
-                                            <!-- <td><?=$key->sell_name; ?></td> -->
-                                            <td><?=$key->number_added.' '.(($key->number_added < 10)?'<span class="badge badge-danger ml-2 animated flash infinite">Re-order</span>':''); ?>
-                                            </td>
-                                            <td><?=$key->selling_price; ?></td>
-                                            <td><?=$key->wholesale_selling_price; ?></td>
-                                            <?php if($grpid == 1): ?>
-                                            <td><button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
-                                                    data-target=".addProduct" data-id="<?=$key->main_id;?>"
-                                                    data-catid="<?=$key->itemcat_type_id;?>"
-                                                    data-brandid="<?=$key->brand_id;?>"
-                                                    data-itemid="<?=$key->item_type_id;?>"
-                                                    data-sellingid="<?=$key->selling_type_id;?>"
-                                                    data-entry="<?=$key->selling_price; ?>">Add Stock</button>
-                                                <button type="button" onclick="item_details(<?=$key->main_id;?>)"
-                                                    class="btn btn-danger btn-sm" data-toggle="modal">View Sale
-                                                    Details</button>
-                                            </td>
-                                            <?php elseif($grpid == 2): ?>
-                                            <td><button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
-                                                    data-target=".sellProduct" data-id="<?=$key->main_id;?>"
-                                                    data-entry="<?=$key->selling_price; ?>" data-sale="Retail">Input
-                                                    Sale</button>
-                                                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
-                                                    data-target=".sellProduct" data-id="<?=$key->main_id;?>"
-                                                    data-sale="Wholesale"
-                                                    data-entry="<?=$key->wholesale_selling_price; ?>">WholeSale
-                                                    Input</button>
-                                            </td>
-                                            <?php endif; ?>
+                                        <?php
+                                        foreach ($stdata as $key) :
+                                        ?>
+                                            <tr>
+                                                <td><img src="<?= (empty($key->item_pic) ? URLROOT . '/public/img/lightbox/preloader.gif' : URLROOT . '/public/img/products/' . $key->item_pic); ?>" width="50" height="50" alt="img">
+                                                </td>
+                                                <td><?= $key->cat_type_name; ?></td>
+                                                <td><?= $key->brand_name; ?></td>
+                                                <td><?= (empty($key->type_name) ? 'Sachet(s)' : $key->type_name); ?></td>
+                                                <!-- <td><?= $key->sell_name; ?></td> -->
+                                                <td><?= $key->number_added . ' ' . (($key->number_added < 10) ? '<span class="badge badge-danger ml-2 animated flash infinite">Re-order</span>' : ''); ?>
+                                                </td>
+                                                <td><?= $key->selling_price; ?></td>
+                                                <td><?= $key->wholesale_selling_price; ?></td>
+                                                <?php if ($grpid == 1) : ?>
+                                                    <td><button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".addProduct" data-id="<?= $key->main_id; ?>" data-catid="<?= $key->itemcat_type_id; ?>" data-brandid="<?= $key->brand_id; ?>" data-itemid="<?= $key->item_type_id; ?>" data-sellingid="<?= $key->selling_type_id; ?>" data-entry="<?= $key->selling_price; ?>">Add Stock</button>
+                                                        <button type="button" onclick="item_details(<?= $key->main_id; ?>)" class="btn btn-danger btn-sm" data-toggle="modal">View Sale
+                                                            Details</button>
+                                                    </td>
+                                                <?php elseif ($grpid == 2) : ?>
+                                                    <td><button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".sellProduct" data-id="<?= $key->main_id; ?>" data-entry="<?= $key->selling_price; ?>" data-sale="Retail">Input
+                                                            Sale</button>
+                                                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".sellProduct" data-id="<?= $key->main_id; ?>" data-sale="Wholesale" data-entry="<?= $key->wholesale_selling_price; ?>">WholeSale
+                                                            Input</button>
+                                                    </td>
+                                                <?php endif; ?>
 
-                                        </tr>
+                                            </tr>
                                         <?php endforeach ?>
                                     </tbody>
                                     <tfoot>
@@ -181,60 +167,58 @@ $cart = $data['orders'];
                                             </th>
                                             <th>Wholesale Price
                                             </th>
-                                            <?php if($grpid == 1): ?>
+                                            <?php if ($grpid == 1) : ?>
 
-                                            <?php elseif($grpid == 2): ?>
-                                            <th>Action</th>
+                                            <?php elseif ($grpid == 2) : ?>
+                                                <th>Action</th>
                                             <?php endif; ?>
                                         </tr>
                                     </tfoot>
                                 </table>
                             </div>
                             <div class="col-1"></div>
-                            <?php if($grpid == 2 && !empty($cart)): ?>
-                            <div class="col-4 mt-5">
-                                <table class="table" cellspacing="0">
-                                    <thead class="table-sm">
-                                        <tr>
-                                            <th class="th-sm">Item Name(Num. Bought)
-                                            </th>
-                                            <th class="th-sm">Unit Price</th>
-                                            <th class="th-sm">Total Price
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                $tot = 0;
-                $sp = 0;
-                $nb = 0;
-                foreach ($cart as $key):
-                  $tot += $key->total_amount;
-                  $sp += $key->unit_amount;
-                  $nb += $key->no_purchased;
-                  ?>
-                                        <tr>
-                                            <td><?=$key->brand_name.'('.$key->no_purchased.')'; ?></td>
-                                            <td><?=$key->unit_amount; ?></td>
-                                            <td><?=$key->total_amount; ?></td>
-                                        </tr>
-                                        <?php endforeach ?>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <th>Item Name(Num. Bought)
-                                            </th>
-                                            <th>Total Unit Price: <?=$sp ?>
-                                            </th>
-                                            <th>Total Price: <?=$tot ?>
-                                            </th>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                                <td><button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
-                                        data-target=".checkout" data-id="<?=$key->main_id;?>"
-                                        data-entry="<?=$key->selling_price; ?>">Checkout</button></td>
-                            </div>
+                            <?php if (!empty($cart)) : ?>
+                                <div class="col-4 mt-5">
+                                    <table class="table" cellspacing="0">
+                                        <thead class="table-sm">
+                                            <tr>
+                                                <th class="th-sm">Item Name(Num. Bought)
+                                                </th>
+                                                <th class="th-sm">Unit Price</th>
+                                                <th class="th-sm">Total Price
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                            $tot = 0;
+                                            $sp = 0;
+                                            $nb = 0;
+                                            foreach ($cart as $key) :
+                                                $tot += $key->total_amount;
+                                                $sp += $key->unit_amount;
+                                                $nb += $key->no_purchased;
+                                            ?>
+                                                <tr>
+                                                    <td><?= $key->brand_name . '(' . $key->no_purchased . ')'; ?></td>
+                                                    <td><?= $key->unit_amount; ?></td>
+                                                    <td><?= $key->total_amount; ?></td>
+                                                </tr>
+                                            <?php endforeach ?>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th>Item Name(Num. Bought)
+                                                </th>
+                                                <th>Total Unit Price: <?= $sp ?>
+                                                </th>
+                                                <th>Total Price: <?= $tot ?>
+                                                </th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                    <td><button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".checkout" data-id="<?= $key->main_id; ?>" data-entry="<?= $key->selling_price; ?>">Checkout</button></td>
+                                </div>
                             <?php endif; ?>
                         </div>
 
@@ -262,21 +246,21 @@ $cart = $data['orders'];
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true" class="white-text">x</span>
                 </button>
-                <?php 
-          // $sup_data = $user->finddata('id','stock_available',$coming_id);
-          // //var_dump($sup_data);
-          // foreach ($sup_data as $key) {            
-          //   $u_price = $key->unitcost_price;
-          //   $s_price = $key->selling_price;
-          //   $t_price = $key->totalcost_price;
-          //   $num_added = $key->number_added;
-          //   $selling_type_id = $key->selling_type_id;
-          //   $item_type_id = $key->item_type_id;
-          //   $brand_id = $key->brand_id;
-          //   $itemcat_type_id = $key->itemcat_type_id;
-          //   $st_available_id = $key->id;
-          // }
-          ?>
+                <?php
+                // $sup_data = $user->finddata('id','stock_available',$coming_id);
+                // //var_dump($sup_data);
+                // foreach ($sup_data as $key) {            
+                //   $u_price = $key->unitcost_price;
+                //   $s_price = $key->selling_price;
+                //   $t_price = $key->totalcost_price;
+                //   $num_added = $key->number_added;
+                //   $selling_type_id = $key->selling_type_id;
+                //   $item_type_id = $key->item_type_id;
+                //   $brand_id = $key->brand_id;
+                //   $itemcat_type_id = $key->itemcat_type_id;
+                //   $st_available_id = $key->id;
+                // }
+                ?>
             </div>
             <div class="modal-body">
                 <div class="text-center">
@@ -287,9 +271,7 @@ $cart = $data['orders'];
                             <div class="input-group-prepend">
                                 <span class="input-group-text md-addon" for="buying_price1">Selling Price: </span>
                             </div>
-                            <input type="text" onkeypress="checkint(event)" class="form-control"
-                                placeholder="Selling Price" id="itemname" readonly name="buying_price1"
-                                aria-describedby="buying_price1">
+                            <input type="text" onkeypress="checkint(event)" class="form-control" placeholder="Selling Price" id="itemname" readonly name="buying_price1" aria-describedby="buying_price1">
                             <div class="input-group-append">
                                 <span class="input-group-text md-addon">GH&#8373;</span>
                             </div>
@@ -298,38 +280,31 @@ $cart = $data['orders'];
                             <div class="input-group-prepend">
                                 <span class="input-group-text md-addon" for="amount_purchased1">No Bought: </span>
                             </div>
-                            <input type="text" onkeypress="checkint(event)" class="form-control"
-                                placeholder="Number Bought" autocomplete="off" id="amount_purchased1"
-                                onblur="calculate()" name="amount_purchased1" aria-describedby="amount_purchased1">
+                            <input type="text" onkeypress="checkint(event)" class="form-control" placeholder="Number Bought" autocomplete="off" id="amount_purchased1" onblur="calculate()" name="amount_purchased1" aria-describedby="amount_purchased1">
                         </div>
                         <div class="md-form input-group">
                             <div class="input-group-prepend">
                                 <span class="input-group-text md-addon" for="total_amount1">Total Amount: </span>
                             </div>
-                            <input type="text" onkeypress="checkint(event)" class="form-control" readonly
-                                id="total_amount1" name="total_amount1" aria-describedby="total_amount1">
+                            <input type="text" onkeypress="checkint(event)" class="form-control" readonly id="total_amount1" name="total_amount1" aria-describedby="total_amount1">
                             <div class="input-group-append">
                                 <span class="input-group-text md-addon">GH&#8373;</span>
                             </div>
                         </div>
                         <div class="md-form input-group mt-1 mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text md-addon" for="saletype"><i
-                                        class="fa fa-shopping-cart"></i></span>
+                                <span class="input-group-text md-addon" for="saletype"><i class="fa fa-shopping-cart"></i></span>
                             </div>
-                            <select class="browser-default custom-select form-control rounded" name="saletype"
-                                id="saletype">
+                            <select class="browser-default custom-select form-control rounded" name="saletype" id="saletype">
                                 <option value="" style="color: #C3C3C3;" selected>Sale Type...</option>
-                                <option value="Blisters">Blisters</option>
+                                <option value="Singles">Singles</option>
                                 <option value="Pack">Pack</option>
                             </select>
                         </div>
                         <!--Footer-->
                         <div class="modal-footer justify-content-center">
-                            <button type="submit" class="btn btn-sm btn-danger waves-effect animated bounce" id="submit"
-                                name="submit">Save<i class="far fa-gem ml-1 text-white"></i></button>
-                            <button type="button" class="btn btn-sm btn-outline-danger waves-effect animated bounce"
-                                data-dismiss="modal" onclick="closeModal('sellProduct')">No, Cancel</button>
+                            <button type="submit" class="btn btn-sm btn-danger waves-effect animated bounce" id="submit" name="submit">Save<i class="far fa-gem ml-1 text-white"></i></button>
+                            <button type="button" class="btn btn-sm btn-outline-danger waves-effect animated bounce" data-dismiss="modal" onclick="closeModal('sellProduct')">No, Cancel</button>
                         </div>
                     </form>
                 </div>
@@ -364,11 +339,10 @@ $cart = $data['orders'];
                             <div class="input-group-prepend">
                                 <span class="input-group-text md-addon" for="supplier">Supplier: </span>
                             </div>
-                            <select class="browser-default custom-select form-control rounded" name="supplier"
-                                id="supplier1">
+                            <select class="browser-default custom-select form-control rounded" name="supplier" id="supplier1">
                                 <option value="" style="color: #C3C3C3;" selected>Supplier...</option>
-                                <?php foreach($supplier as $key): ?>
-                                <option value="<?php echo $key->id; ?>"><?php echo $key->suppliers_name; ?></option>
+                                <?php foreach ($supplier as $key) : ?>
+                                    <option value="<?php echo $key->id; ?>"><?php echo $key->suppliers_name; ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -386,53 +360,40 @@ $cart = $data['orders'];
                             <div class="input-group-prepend">
                                 <span class="input-group-text md-addon" for="no_added"><i class="fa fa-plus"></i></span>
                             </div>
-                            <input type="number" onkeypress="checkint(event)" class="form-control"
-                                placeholder="Number Added" id="no_added1" name="no_added" aria-describedby="no_added">
+                            <input type="number" onkeypress="checkint(event)" class="form-control" placeholder="Number Added" id="no_added1" name="no_added" aria-describedby="no_added">
                         </div>
                         <div class="md-form input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text md-addon" for="unit_price"><i
-                                        class="fa fa-money"></i></span>
+                                <span class="input-group-text md-addon" for="unit_price"><i class="fa fa-money"></i></span>
                             </div>
-                            <input type="text" class="form-control" onkeypress="checkint(event)"
-                                placeholder="Unit Cost Price" id="unit_price1" name="unit_price"
-                                aria-describedby="unit_price">
+                            <input type="text" class="form-control" onkeypress="checkint(event)" placeholder="Unit Cost Price" id="unit_price1" name="unit_price" aria-describedby="unit_price">
                             <div class="input-group-append">
                                 <span class="input-group-text md-addon">GH&#8373;</span>
                             </div>
                         </div>
                         <div class="md-form input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text md-addon" for="total_price"><i
-                                        class="fa fa-money"></i></span>
+                                <span class="input-group-text md-addon" for="total_price"><i class="fa fa-money"></i></span>
                             </div>
-                            <input type="text" class="form-control" onkeypress="checkint(event)"
-                                placeholder="Total Cost Price" id="total_price1" name="total_price"
-                                aria-describedby="total_price">
+                            <input type="text" class="form-control" onkeypress="checkint(event)" placeholder="Total Cost Price" id="total_price1" name="total_price" aria-describedby="total_price">
                             <div class="input-group-append">
                                 <span class="input-group-text md-addon">GH&#8373;</span>
                             </div>
                         </div>
                         <div class="md-form input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text md-addon" for="selling_price"><i
-                                        class="fa fa-money"></i></span>
+                                <span class="input-group-text md-addon" for="selling_price"><i class="fa fa-money"></i></span>
                             </div>
-                            <input type="text" class="form-control" onkeypress="checkint(event)"
-                                placeholder="Selling Price" id="selling_price1" name="selling_price"
-                                aria-describedby="selling_price">
+                            <input type="text" class="form-control" onkeypress="checkint(event)" placeholder="Selling Price" id="selling_price1" name="selling_price" aria-describedby="selling_price">
                             <div class="input-group-append">
                                 <span class="input-group-text md-addon">GH&#8373;</span>
                             </div>
                         </div>
                         <div class="md-form input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text md-addon" for="wholesale_selling_price"><i
-                                        class="fa fa-money"></i></span>
+                                <span class="input-group-text md-addon" for="wholesale_selling_price"><i class="fa fa-money"></i></span>
                             </div>
-                            <input type="text" class="form-control" onkeypress="checkint(event)"
-                                placeholder="Wholesale Selling Price" id="wholesale_selling_price1"
-                                name="wholesale_selling_price" aria-describedby="wholesale_selling_price">
+                            <input type="text" class="form-control" onkeypress="checkint(event)" placeholder="Wholesale Selling Price" id="wholesale_selling_price1" name="wholesale_selling_price" aria-describedby="wholesale_selling_price">
                             <div class="input-group-append">
                                 <span class="input-group-text md-addon">GH&#8373;</span>
                             </div>
@@ -441,30 +402,24 @@ $cart = $data['orders'];
                             <div class="input-group-prepend">
                                 <span class="input-group-text md-addon" for="expiry_date">Expiry Date</span>
                             </div>
-                            <input type="date" class="form-control" placeholder="Expiry Date" id="expiry_date1"
-                                name="expiry_date" aria-describedby="expiry_date">
+                            <input type="date" class="form-control" placeholder="Expiry Date" id="expiry_date1" name="expiry_date" aria-describedby="expiry_date">
                         </div>
                         <div class="md-form input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text md-addon" for="invoice_no"><i
-                                        class="fa fa-ticket"></i></span>
+                                <span class="input-group-text md-addon" for="invoice_no"><i class="fa fa-ticket"></i></span>
                             </div>
-                            <input type="text" class="form-control" placeholder="Invoice Number" id="invoice_no1"
-                                name="invoice_no" aria-describedby="invoice_no">
+                            <input type="text" class="form-control" placeholder="Invoice Number" id="invoice_no1" name="invoice_no" aria-describedby="invoice_no">
                         </div>
                         <div class="md-form input-group">
                             <div class="input-group-prepend">
                                 <span class="input-group-text md-addon" for="add_img">Add Image: </span>
                             </div>
-                            <input type="file" class="form-control" readonly id="add_img1" name="add_img"
-                                aria-describedby="add_img">
+                            <input type="file" class="form-control" readonly id="add_img1" name="add_img" aria-describedby="add_img">
                         </div>
                         <!--Footer-->
                         <div class="modal-footer justify-content-center">
-                            <button type="submit" class="btn btn-sm btn-danger waves-effect animated bounce" id="submit"
-                                name="submit">Save<i class="far fa-gem ml-1 text-white"></i></button>
-                            <button type="button" class="btn btn-sm btn-outline-danger waves-effect animated bounce"
-                                data-dismiss="modal" onclick="closeModal('addProduct')">No, Cancel</button>
+                            <button type="submit" class="btn btn-sm btn-danger waves-effect animated bounce" id="submit" name="submit">Save<i class="far fa-gem ml-1 text-white"></i></button>
+                            <button type="button" class="btn btn-sm btn-outline-danger waves-effect animated bounce" data-dismiss="modal" onclick="closeModal('addProduct')">No, Cancel</button>
                         </div>
                     </form>
                 </div>
@@ -479,7 +434,7 @@ $cart = $data['orders'];
     <div class="modal-dialog modal-dialog-scrollable modal-notify modal-center modal-lg modal-success" role="document">
         <div class="modal-content" style="border-radius: 10px 10px;">
             <div class="modal-header bg-danger">
-                <h1 class="heading text-center text-dark" id="thprint">LB PHARMACY</h1><br>
+                <h1 class="heading text-center text-dark" id="thprint">A.K SONIA VENTURES</h1><br>
                 <h4 class="heading text-dark animated flash delay-2s text-center d-print-none">CHECKOUT
                     <i class="fa fa-shopping-cart ml-1 animated rotateIn"></i>
                 </h4>
@@ -502,15 +457,15 @@ $cart = $data['orders'];
                             </thead>
                             <tbody>
                                 <?php
-                foreach ($cart as $key):
-                  ?>
-                                <tr>
-                                    <td id="tbprint">
-                                        <?=$key->cat_type_name.'('.$key->type_name.' '.$key->brand_name.'('.$key->no_purchased.')'.')'; ?>
-                                    </td>
-                                    <td id="tbprint"><?=$key->unit_amount; ?></td>
-                                    <td id="tbprint"><?=$key->total_amount; ?></td>
-                                </tr>
+                                foreach ($cart as $key) :
+                                ?>
+                                    <tr>
+                                        <td id="tbprint">
+                                            <?= $key->cat_type_name . '(' . $key->type_name . ' ' . $key->brand_name . '(' . $key->no_purchased . ')' . ')'; ?>
+                                        </td>
+                                        <td id="tbprint"><?= $key->unit_amount; ?></td>
+                                        <td id="tbprint"><?= $key->total_amount; ?></td>
+                                    </tr>
                                 <?php endforeach ?>
                             </tbody>
                             <tfoot>
@@ -519,7 +474,7 @@ $cart = $data['orders'];
                                     </th>
                                     <th id="tbprint">Total:
                                     </th>
-                                    <th id="tbprint">&#8373 <?=$tot ?>
+                                    <th id="tbprint">&#8373 <?= $tot ?>
                                     </th>
                                 </tr>
                             </tfoot>
@@ -528,9 +483,7 @@ $cart = $data['orders'];
                         <p class="d-none d-print-block"><br><br> ITEMS SOLD ARE NOT RETURNABLE</p>
                         <br>
                         <p class="text-center">
-                            <img class="d-none d-print-block" id="imgpri"
-                                src="<?=URLROOT.'/public/img/lightbox/lbpharma.png';?>" width="200" height="200"
-                                alt="img">
+                            <img class="d-none d-print-block" id="imgpri" src="<?= URLROOT . '/public/img/lightbox/comedigitalize_barcode.png'; ?>" width="200" height="200" alt="img">
                         </p>
 
                         <br>
@@ -539,12 +492,8 @@ $cart = $data['orders'];
 
                         <div class="modal-footer justify-content-center d-print-none">
                             <!-- <button type="hidden" class="btn btn-sm btn-danger waves-effect animated bounce" id="submit" name="submit">Checkout<i class="far fa-gem ml-1 text-white"></i></button>-->
-                            <button class="btn btn-danger btn-sm waves-effect animated bounce d-print-none"
-                                data-toggle="tooltip" data-placement="top" title="Print" onclick="print()">Checkout<i
-                                    class="fa fa-print " aria-hidden="true"></i></button>
-                            <button type="button"
-                                class="btn btn-sm btn-outline-danger waves-effect animated bounce d-print-none"
-                                data-dismiss="modal" onclick="closeModal('sellProduct')">No, Cancel</button>
+                            <button class="btn btn-danger btn-sm waves-effect animated bounce d-print-none" data-toggle="tooltip" data-placement="top" title="Print" onclick="print()">Checkout<i class="fa fa-print " aria-hidden="true"></i></button>
+                            <button type="button" class="btn btn-sm btn-outline-danger waves-effect animated bounce d-print-none" data-dismiss="modal" onclick="closeModal('sellProduct')">No, Cancel</button>
                         </div>
                     </form>
                 </div>
@@ -552,82 +501,82 @@ $cart = $data['orders'];
         </div>
     </div>
 </div>
-<?php 
+<?php
 require APPROOT . '/views/includes/footer.php';
 require APPROOT . '/views/includes/modal.php';
 // require APPROOT . '/views/ajaxmodals/post_modal.php';
 
 
- ?>
+?>
 
 <script>
-function item_details(id) {
-    var data = id;
-    jQuery.ajax({
-        url: "ajaxmodals/itemdetails.php",
-        method: "post",
-        data: "promo_id=" + data,
-        success: function(data) {
-            jQuery('body').append(data);
-            jQuery('.detail_modal').modal('toggle');
-        },
-        error: function() {
-            alert("Something went wrong");
-        }
+    function item_details(id) {
+        var data = id;
+        jQuery.ajax({
+            url: "ajaxmodals/itemdetails.php",
+            method: "post",
+            data: "promo_id=" + data,
+            success: function(data) {
+                jQuery('body').append(data);
+                jQuery('.detail_modal').modal('toggle');
+            },
+            error: function() {
+                alert("Something went wrong");
+            }
+        });
+    }
+    $(".sellProduct").on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget);
+        var promo_id = button.data('id');
+        var promo_stage = button.data('entry');
+        var promo_sale = button.data('sale');
+
+        var modal = $(this);
+        modal.find('.modal-body #recipientid').val(promo_id);
+        modal.find('.modal-body #itemname').val(promo_stage);
+        modal.find('.modal-body #sale').val(promo_sale);
     });
-}
-$(".sellProduct").on('show.bs.modal', function(event) {
-    var button = $(event.relatedTarget);
-    var promo_id = button.data('id');
-    var promo_stage = button.data('entry');
-    var promo_sale = button.data('sale');
 
-    var modal = $(this);
-    modal.find('.modal-body #recipientid').val(promo_id);
-    modal.find('.modal-body #itemname').val(promo_stage);
-    modal.find('.modal-body #sale').val(promo_sale);
-});
+    $(".addProduct").on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget);
+        var promo_id = button.data('id');
+        var promo_stage = button.data('entry');
+        var product_category_type = button.data('catid');
+        var product_type = button.data('brandid');
+        var brand_type_name = button.data('itemid');
+        var buying_kind = button.data('sellingid');
 
-$(".addProduct").on('show.bs.modal', function(event) {
-    var button = $(event.relatedTarget);
-    var promo_id = button.data('id');
-    var promo_stage = button.data('entry');
-    var product_category_type = button.data('catid');
-    var product_type = button.data('brandid');
-    var brand_type_name = button.data('itemid');
-    var buying_kind = button.data('sellingid');
+        var modal = $(this);
+        modal.find('.modal-body #recipientid').val(promo_id);
+        modal.find('.modal-body #itemname').val(promo_stage);
+        modal.find('.modal-body #product_cat').val(product_category_type);
+        modal.find('.modal-body #product_tp').val(product_type);
+        modal.find('.modal-body #brand_type').val(brand_type_name);
+        modal.find('.modal-body #buying_kd').val(buying_kind);
+    });
 
-    var modal = $(this);
-    modal.find('.modal-body #recipientid').val(promo_id);
-    modal.find('.modal-body #itemname').val(promo_stage);
-    modal.find('.modal-body #product_cat').val(product_category_type);
-    modal.find('.modal-body #product_tp').val(product_type);
-    modal.find('.modal-body #brand_type').val(brand_type_name);
-    modal.find('.modal-body #buying_kd').val(buying_kind);
-});
+    function closeModal(id) {
+        var modalid = document.getElementById(id);
+        jQuery(modalid).modal('hide');
+        setTimeout(function() {
+            jQuery(modalid).remove();
+            jQuery('.modal_backdrop').remove();
+        }, 300);
+    }
 
-function closeModal(id) {
-    var modalid = document.getElementById(id);
-    jQuery(modalid).modal('hide');
-    setTimeout(function() {
-        jQuery(modalid).remove();
-        jQuery('.modal_backdrop').remove();
-    }, 300);
-}
+    $(".checkout").on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget);
+        var promo_id = button.data('id');
+        var promo_stage = button.data('entry');
 
-$(".checkout").on('show.bs.modal', function(event) {
-    var button = $(event.relatedTarget);
-    var promo_id = button.data('id');
-    var promo_stage = button.data('entry');
+        var modal = $(this);
+        modal.find('.modal-body #recipientid').val(promo_id);
+        modal.find('.modal-body #itemname').val(promo_stage);
+    });
 
-    var modal = $(this);
-    modal.find('.modal-body #recipientid').val(promo_id);
-    modal.find('.modal-body #itemname').val(promo_stage);
-});
-
-calculate = function() {
-    var resources = document.getElementById('itemname').value;
-    var minutes = document.getElementById('amount_purchased1').value;
-    document.getElementById('total_amount1').value = parseFloat(resources) * parseFloat(minutes);
-}
+    calculate = function() {
+        var resources = document.getElementById('itemname').value;
+        var minutes = document.getElementById('amount_purchased1').value;
+        document.getElementById('total_amount1').value = parseFloat(resources) * parseFloat(minutes);
+    }
 </script>

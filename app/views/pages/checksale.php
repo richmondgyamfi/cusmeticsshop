@@ -150,7 +150,7 @@ $stdata = $data['todaysales'];
                                         <?php if ($grpid == 1) : ?>
                                             <td>
                                                 <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target=".editsale" data-id="<?= $key->main_id; ?>" data-entry="<?= $key->no_purchased; ?>" data-unitamount="<?= $key->unit_amount; ?>" data-totalamount="<?= $key->total_amount; ?>" data-toggle="tooltip" data-placement="left" title="Edit Sale"><i class="fa fa-pencil"></i></button>
-                                                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".delete" data-id="<?= $key->main_id; ?>" data-entry="sales_tb" data-toggle="tooltip" data-placement="right" title="Delete Sale"><i class="fa fa-trash"></i></button>
+                                                <!-- <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".delete" data-id="<?= $key->main_id; ?>" data-entry="sales_tb" data-toggle="tooltip" data-placement="right" title="Delete Sale"><i class="fa fa-trash"></i></button> -->
                                             </td>
                                         <?php elseif ($grpid == 2) : ?>
 

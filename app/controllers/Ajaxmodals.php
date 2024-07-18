@@ -12,8 +12,74 @@
 class Ajaxmodals extends Controller {
     public function __construct() {
         $this->userModel = $this->model('User');
-		$this->userFunctions = $this->model('Functions');
+        $this->userFunctions = $this->model('Functions');
     }
+
+    public function courses()
+    {
+
+        if ($_POST['rid']) {
+            // var_dump($_POST);
+            // die();
+            $data = [
+                'barcode' => trim($_POST['rid'])
+            ];
+
+            $cosdata = $this->userModel->checkbarcode($data);
+            // $cosdata = $this->userModel->gettotal_courses(10);
+            // var_dump($cosdata);
+            foreach ($cosdata as $itemdata) {
+            }
+            // die();
+            echo '<div class="md-form input-group">';
+            echo '<div class="input-group-prepend">';
+            echo '<span class="input-group-text md-addon" for="brand_name">Product Name:</span>';
+            echo '</div>';
+            echo '<input type="hidden" name="ptype" id="sale" value="Retail">';
+            echo '<input type="text" class="form-control" value="' . $itemdata->brand_name . '" readonly id="brand_name" name="brand_name" aria-describedby="brand_name">';
+            echo '<input type="hidden" class="form-control" value="' . $itemdata->id . '" readonly id="recipientid" name="st_id" aria-describedby="st_id">';
+            echo '</div>';
+            echo '<div class="md-form input-group">';
+            echo '<div class="input-group-prepend">';
+            echo '<span class="input-group-text md-addon" for="no_available">Quantity Available:</span>';
+            echo '</div>';
+            echo '<input type="text" class="form-control" value="' . $itemdata->number_added . '" readonly id="no_available" name="no_available" aria-describedby="no_available">';
+            echo '</div>';
+            echo '<div class="md-form input-group">';
+            echo '<div class="input-group-prepend">';
+            echo '<span class="input-group-text md-addon" for="amount_purchased1">Quantity:</span>';
+            echo '</div>';
+            echo '<input type="text" class="form-control" value="" onkeypress="checkint(event)" id="amount_purchased1" required onkeyup="calculate()" name="amount_purchased1" aria-describedby="amount_purchased1">';
+            echo '</div>';
+            echo '<div class="md-form input-group">';
+            echo '<div class="input-group-prepend">';
+            echo '<span class="input-group-text md-addon" for="buying_price1">Selling Price:</span>';
+            echo '</div>';
+            echo '<input type="text" class="form-control" value="' . $itemdata->selling_price . '" id="itemname" name="buying_price1" aria-describedby="buying_price1">';
+            echo '</div>';
+            echo '<div class="md-form input-group">';
+            echo '<div class="input-group-prepend">';
+            echo '<span class="input-group-text md-addon" for="total_amount1">Total Amount:</span>';
+            echo '</div>';
+            echo '<input type="text" class="form-control" value="" id="total_amount1" name="total_amount1" aria-describedby="total_amount1">';
+            echo '</div>';
+            echo '<div class="md-form input-group mt-1 mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text md-addon" for="saletype"><i class="fa fa-shopping-cart"></i></span>
+        </div>
+        <select class="browser-default custom-select form-control rounded" name="saletype" id="saletype">
+            <option value="" style="color: #C3C3C3;" selected>Sale Type...</option>
+            <option value="Singles">Singles</option>
+            <option value="Pack">Pack</option>
+        </select>
+    </div>';
+            echo '<div class="justify-content-center">
+            <button type="submit" class="btn btn-sm btn-success">Submit<i class="far fa-gem ml-1 text-white"></i></button>
+            <button type="button" class="btn btn-sm btn-outline-danger waves-effect" onClick="window.location.reload();" data-dismiss="modal">No, Cancel</button>
+        </div>';
+        }
+    }
+
 
     public function itemdetails() {
         // echo "string";
@@ -30,14 +96,14 @@ class Ajaxmodals extends Controller {
                     $brandst = $key->brand_id;
                     $added = $key->number_added;
                 }
-                $tdate =$this->userModel->todaydate();
+                $tdate = $this->userModel->todaydate();
                 $tdate = $tdate[0]->nowdate;
                 $value = explode('-', $tdate);
                 $val = $value[0].$value[1].$value[2];
                 // echo $val;
                 $data = [
-                    'itemcat_type_id' =>trim($cat1),
-                    'item_type_id' =>trim($itempro_type),
+                    'itemcat_type_id' => trim($cat1),
+                    'item_type_id' => trim($itempro_type),
                     'brand_id' => trim($brandst),
                     'tdate' => trim($tdate),
                     'dateval' => $val
@@ -77,7 +143,7 @@ class Ajaxmodals extends Controller {
 
                 //get total sale of particular item
                 // $checkspecificsale = $this->userModel->checkspecificsale($stid);
-                
+
                 //get the highest and willl help get the difference
                 $itemleft = $this->userModel->itemleft($stid);
                 //get yesterdays last sale so we can get items we sold today
@@ -107,164 +173,162 @@ class Ajaxmodals extends Controller {
                 }
             }
 
-        ?>
-<div class="modal fade detail_modal" id="detail_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-notify modal-center modal-lg modal-success" role="document">
-        <div class="modal-content" style="border-radius: 10px 10px;">
-            <div class="modal-header bg-danger">
-                <h4 class="heading text-white animated flash delay-2s">Item Details
-                </h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModal1()">
-                    <span aria-hidden="true" class="text-white btn-sm btn-danger">Close</span>
-                </button>
-            </div>
-            <div class="modal-body bg-light">
-                <div class="body">
-                    <div class="row">
-                        <!--<div class="col-4">
+?>
+            <div class="modal fade detail_modal" id="detail_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable modal-notify modal-center modal-lg modal-success" role="document">
+                    <div class="modal-content" style="border-radius: 10px 10px;">
+                        <div class="modal-header bg-danger">
+                            <h4 class="heading text-white animated flash delay-2s">Item Details
+                            </h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModal1()">
+                                <span aria-hidden="true" class="text-white btn-sm btn-danger">Close</span>
+                            </button>
+                        </div>
+                        <div class="modal-body bg-light">
+                            <div class="body">
+                                <div class="row">
+                                    <!--<div class="col-4">
                             <div class="card bg-light">
                                 <h5>All Statistics</h5><br>
                                 <p class="text-danger text-right"><?='Sold : '.$totalsold.' Amount : GHC '.$totalamt ?></p>
                             </div>
                         </div>-->
-                        <div class="col-6">
-                            <div class="card bg-light p-2">
-                                <h5>Statistics Today</h5><br>
+                                    <div class="col-6">
+                                        <div class="card bg-light p-2">
+                                            <h5>Statistics Today</h5><br>
 
-                                <p class="text-danger text-right">
-                                    <?='Number Existed : '.$todaysalesft[0]->num_available; ?></p>
+                                            <p class="text-danger text-right">
+                                                <?='Number Existed : '.$todaysalesft[0]->num_available; ?></p>
 
-                                <p class="text-danger text-right"><?='Total Added : '.$totaladded; ?></p>
+                                            <p class="text-danger text-right"><?='Total Added : '.$totaladded; ?></p>
 
-                                <p class="text-danger text-right"><?='Number Sold : '.$totalsoldtoday ?></p>
-
-
-                                <p class="text-danger text-right"><?php
-                                echo 'Number Left : '.$todaysalesst[0]->num_available;
-                                // $left = $yes-$totalsoldtoday;
-                                // echo 'Number Left : '.$left; 
-                                ?></p>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="card bg-light p-2">
-                                <h5>Statistics Yesterday</h5><br>
-
-                                <p class="text-danger text-right">
-                                    <?='Number Existed : '.$yestisalesft[0]->num_available; ?></p>
-                                <p class="text-danger text-right"><?='Total Added : '.$totaladdedyesti; ?></p>
+                                            <p class="text-danger text-right"><?='Number Sold : '.$totalsoldtoday ?></p>
 
 
-                                <p class="text-danger text-right"><?='Number Sold : '.$totalsoldyesti; ?></p>
+                                            <p class="text-danger text-right"><?php
+                                                                                echo 'Number Left : '.$todaysalesst[0]->num_available;
+                                                                                // $left = $yes-$totalsoldtoday;
+                                                                                // echo 'Number Left : '.$left; 
+                                                                                ?></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="card bg-light p-2">
+                                            <h5>Statistics Yesterday</h5><br>
 
-                                <p class="text-danger text-right"><?php
-                                    echo 'Number Left : '.$yes = $yestisales[0]->num_available;
-                                    // $left = $yes-$totalsoldyesti;
-                                    // echo 'Number Left : '.$left; 
-                                    ?></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <h5>Sale Details</h5>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Number Available</th>
-                                    <th>Number Purchased</th>
-                                    <th>Total Cost</th>
-                                    <th>Unit Cost</th>
-                                    <th>Date Sold</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach($checkallsale as $salemain): ?>
-                                <tr>
-                                    <td><?=$salemain->num_available;?></td>
-                                    <td><?=$salemain->no_purchased;?></td>
-                                    <td><?=$salemain->total_amount;?></td>
-                                    <td><?=$salemain->unit_amount;?></td>
-                                    <td><?=$salemain->activity_date;?></td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table><br><br>
-                        <h5>Stock Details</h5>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Number Added</th>
-                                    <th>Inoice Number</th>
-                                    <th>Total Cost</th>
-                                    <th>Unit Cost</th>
-                                    <th>Expiry Date</th>
-                                    <th>Date Added</th>
-                                    <!-- <th>Action</th> -->
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach($checkalldata as $stmain): ?>
-                                <tr>
-                                    <td><?=$stmain->number_added;?></td>
-                                    <td><?=$stmain->invoice_no;?></td>
-                                    <td><?=$stmain->totalcost_price;?></td>
-                                    <td><?=$stmain->unitcost_price;?></td>
-                                    <td><?php 
-                                   echo $stmain->unitcost_price.' '.($stmain->expiredays<10)?'<span class="badge badge-danger ml-2 animated flash infinite">'.$stmain->expiredays.' Days to Expiry</span>':'';
-                                   ?></td>
-                                    <td><?=$stmain->activity_date;?></td>
-                                    <!-- <td>
+                                            <p class="text-danger text-right">
+                                                <?= 'Number Existed : ' . $yestisalesft[0]->num_available; ?></p>
+                                            <p class="text-danger text-right"><?= 'Total Added : ' . $totaladdedyesti; ?></p>
+
+
+                                            <p class="text-danger text-right"><?= 'Number Sold : ' . $totalsoldyesti; ?></p>
+
+                                            <p class="text-danger text-right"><?php
+                                                                                echo 'Number Left : ' . $yes = $yestisales[0]->num_available;
+                                                                                // $left = $yes-$totalsoldyesti;
+                                                                                // echo 'Number Left : '.$left; 
+                                                                                ?></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <h5>Sale Details</h5>
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Number Available</th>
+                                                <th>Number Purchased</th>
+                                                <th>Total Cost</th>
+                                                <th>Unit Cost</th>
+                                                <th>Date Sold</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($checkallsale as $salemain) : ?>
+                                                <tr>
+                                                    <td><?= $salemain->num_available; ?></td>
+                                                    <td><?= $salemain->no_purchased; ?></td>
+                                                    <td><?= $salemain->total_amount; ?></td>
+                                                    <td><?= $salemain->unit_amount; ?></td>
+                                                    <td><?= $salemain->activity_date; ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table><br><br>
+                                    <h5>Stock Details</h5>
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Number Added</th>
+                                                <th>Inoice Number</th>
+                                                <th>Total Cost</th>
+                                                <th>Unit Cost</th>
+                                                <th>Expiry Date</th>
+                                                <th>Date Added</th>
+                                                <!-- <th>Action</th> -->
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($checkalldata as $stmain) : ?>
+                                                <tr>
+                                                    <td><?= $stmain->number_added; ?></td>
+                                                    <td><?= $stmain->invoice_no; ?></td>
+                                                    <td><?= $stmain->totalcost_price; ?></td>
+                                                    <td><?= $stmain->unitcost_price; ?></td>
+                                                    <td><?php
+                                                        echo $stmain->unitcost_price . ' ' . ($stmain->expiredays < 10) ? '<span class="badge badge-danger ml-2 animated flash infinite">' . $stmain->expiredays . ' Days to Expiry</span>' : '';
+                                                        ?></td>
+                                                    <td><?= $stmain->activity_date; ?></td>
+                                                    <!-- <td>
                                        
                                    </td> -->
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
 
-        </div>
-    </div>
-</div>
+            <script>
+                function closeModal() {
+                    jQuery('#detail_modal').modal('hide');
+                    setTimeout(function() {
+                        jQuery('#detail_modal').remove();
+                        jQuery('.modal_backdrop').remove();
+                    }, 300);
+                }
 
-<script>
-function closeModal() {
-    jQuery('#detail_modal').modal('hide');
-    setTimeout(function() {
-        jQuery('#detail_modal').remove();
-        jQuery('.modal_backdrop').remove();
-    }, 300);
-}
+                $('#detail_modal').on('hidden.bs.modal', function() {
+                    setTimeout(function() {
+                        jQuery('#detail_modal').remove();
+                        jQuery('.modal_backdrop').remove();
+                    }, 300);
+                });
 
-$('#detail_modal').on('hidden.bs.modal', function() {
-    setTimeout(function() {
-        jQuery('#detail_modal').remove();
-        jQuery('.modal_backdrop').remove();
-    }, 300);
-});
+                function closeModal() {
+                    jQuery('#detail_modal').modal('hide');
+                    setTimeout(function() {
+                        jQuery('#detail_modal').remove();
+                        jQuery('.modal_backdrop').remove();
+                    }, 300);
+                }
 
-function closeModal() {
-    jQuery('#detail_modal').modal('hide');
-    setTimeout(function() {
-        jQuery('#detail_modal').remove();
-        jQuery('.modal_backdrop').remove();
-    }, 300);
-}
-
-$('#detail_modal').on('hidden.bs.modal', function() {
-    setTimeout(function() {
-        jQuery('#detail_modal').remove();
-        jQuery('.modal_backdrop').remove();
-    }, 300);
-});
-</script>
+                $('#detail_modal').on('hidden.bs.modal', function() {
+                    setTimeout(function() {
+                        jQuery('#detail_modal').remove();
+                        jQuery('.modal_backdrop').remove();
+                    }, 300);
+                });
+            </script>
 
 <?php
-       }
+        }
     }
-
 }
 
 

@@ -214,7 +214,7 @@ class User
     public function stockavailable()
     {
         try {
-            $itemlist = $this->db->query("select *, t1.id as main_id, (t1.number_added * t1.selling_price) as totalsp,DATE_FORMAT(left(t1.activity_date, 10), '%D %M, %Y') as activity_date FROM stock_available AS t1 LEFT JOIN category_type AS t2 ON t1.itemcat_type_id = t2.id LEFT JOIN brands AS t3 ON t1.brand_id = t3.id LEFT JOIN item_type AS t4 ON t1.item_type_id = t4.id LEFT JOIN selling_type AS t5 ON t1.selling_type_id = t5.id");
+            $itemlist = $this->db->query("select *, t1.id as main_id, (t1.number_added * t1.selling_price) as totalsp, (t1.number_added * t1.unitcost_price) as total_unit_cost,DATE_FORMAT(left(t1.activity_date, 10), '%D %M, %Y') as activity_date FROM stock_available AS t1 LEFT JOIN category_type AS t2 ON t1.itemcat_type_id = t2.id LEFT JOIN brands AS t3 ON t1.brand_id = t3.id LEFT JOIN item_type AS t4 ON t1.item_type_id = t4.id LEFT JOIN selling_type AS t5 ON t1.selling_type_id = t5.id");
 
             $items = $this->db->resultSet();
             return (int) $items > 0 ? $items : false;
@@ -388,6 +388,28 @@ class User
         }
     }
 
+    public function saleslist_indvidual_report($data)
+    {
+        try {
+            $itemlist = $this->db->query("select t6.name,ROUND(sum(unit_amount),2) as total_unitamtsold,ROUND(sum(total_amount),2) as totalsold, DATE_FORMAT(left(t1.activity_date, 10), '%D %M, %Y') as activity_date, t1.soldby FROM sales_tb AS t1 
+            LEFT JOIN category_type AS t2 ON t1.itemcat_type_id = t2.id
+            LEFT JOIN brands AS t3 ON t1.brand_id = t3.id 
+            LEFT JOIN item_type AS t4 ON t1.item_type_id = t4.id 
+            LEFT JOIN selling_type AS t5 ON t1.selling_type_id = t5.id
+			left join login as t6 on t1.soldby = t6.username
+            WHERE left(t1.activity_date, 10) BETWEEN :tdate AND :tdate1 AND t1.status = 0
+						GROUP BY t1.soldby, t6.name, activity_date");
+
+            $this->db->bind(':tdate', $data['tdate']);
+            $this->db->bind(':tdate1', $data['tdate1']);
+
+            $items = $this->db->resultSet();
+            return $items;
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
+
     public function salessearch($data)
     {
         try {
@@ -536,9 +558,9 @@ class User
         try {
             $tdate = $data['tdate'];
             $dateval = $data['dateval'];
-            $itemlist = $this->db->query("SELECT *,(t1.number_added * t1.selling_price) as totalsp, DATEDIFF(left(expiry_date,10), '{$dateval}') as expiredays, DATE_FORMAT(left(t1.activity_date, 10), '%D %M, %Y') as activity_date FROM sellshopdb.stock_tb as t1
-            left join sellshopdb.category_type as t2 on t1.itemcat_type_id = t2.id
-            left join sellshopdb.item_type as t3 on t1.item_type_id = t3.id
+            $itemlist = $this->db->query("SELECT *,(t1.number_added * t1.selling_price) as totalsp, DATEDIFF(left(expiry_date,10), '{$dateval}') as expiredays, DATE_FORMAT(left(t1.activity_date, 10), '%D %M, %Y') as activity_date FROM stock_tb as t1
+            left join category_type as t2 on t1.itemcat_type_id = t2.id
+            left join item_type as t3 on t1.item_type_id = t3.id
             LEFT JOIN brands AS t4 ON t1.brand_id = t4.id WHERE left(t1.activity_date, 10) = '{$tdate}'
             ");
 
@@ -562,9 +584,9 @@ class User
             $tdate = $data['tdate'];
             $dateval = $data['dateval'];
 
-            $itemlist = $this->db->query("SELECT *,(t1.number_added * t1.selling_price) as totalsp, DATEDIFF(left(expiry_date,10), '{$dateval}') as expiredays, DATE_FORMAT(left(t1.activity_date, 10), '%D %M, %Y') as activity_date FROM sellshopdb.stock_tb as t1
-            left join sellshopdb.category_type as t2 on t1.itemcat_type_id = t2.id
-            left join sellshopdb.item_type as t3 on t1.item_type_id = t3.id
+            $itemlist = $this->db->query("SELECT *,(t1.number_added * t1.selling_price) as totalsp, DATEDIFF(left(expiry_date,10), '{$dateval}') as expiredays, DATE_FORMAT(left(t1.activity_date, 10), '%D %M, %Y') as activity_date FROM stock_tb as t1
+            left join category_type as t2 on t1.itemcat_type_id = t2.id
+            left join item_type as t3 on t1.item_type_id = t3.id
             LEFT JOIN brands AS t4 ON t1.brand_id = t4.id 
             WHERE t1.itemcat_type_id like '{$procat}' and t1.item_type_id like '{$item_type}' and t1.brand_id like '{$brand_type}' and left(t1.activity_date, 10) = '{$from}'");
 
@@ -580,9 +602,9 @@ class User
     {
         // var_dump($data);die();
         try {
-            $itemlist = $this->db->query("SELECT *,(t1.number_added * t1.selling_price) as totalsp, DATE_FORMAT(left(t1.activity_date, 10), '%D %M, %Y') as activity_date FROM sellshopdb.stock_tb as t1
-            left join sellshopdb.category_type as t2 on t1.itemcat_type_id = t2.id
-            left join sellshopdb.item_type as t3 on t1.item_type_id = t3.id
+            $itemlist = $this->db->query("SELECT *,(t1.number_added * t1.selling_price) as totalsp, DATE_FORMAT(left(t1.activity_date, 10), '%D %M, %Y') as activity_date FROM stock_tb as t1
+            left join category_type as t2 on t1.itemcat_type_id = t2.id
+            left join item_type as t3 on t1.item_type_id = t3.id
             LEFT JOIN brands AS t4 ON t1.brand_id = t4.id 
             WHERE itemcat_type_id = 1 AND brand_id = 1 AND 
             item_type_id = 3 and left(t1.activity_date,10) = DATE(now())");
@@ -603,9 +625,9 @@ class User
     {
         // var_dump($data);die();
         try {
-            $itemlist = $this->db->query("SELECT *, DATE_FORMAT(left(t1.activity_date, 10), '%D %M, %Y') as activity_date FROM sellshopdb.stock_tb as t1
-            left join sellshopdb.category_type as t2 on t1.itemcat_type_id = t2.id
-            left join sellshopdb.item_type as t3 on t1.item_type_id = t3.id
+            $itemlist = $this->db->query("SELECT *, DATE_FORMAT(left(t1.activity_date, 10), '%D %M, %Y') as activity_date FROM stock_tb as t1
+            left join category_type as t2 on t1.itemcat_type_id = t2.id
+            left join item_type as t3 on t1.item_type_id = t3.id
             WHERE itemcat_type_id = 1 AND brand_id = 1 AND 
             item_type_id = 3 and left(t1.activity_date,10) = adddate(DATE(now()), INTERVAL -1 DAY)");
 
@@ -737,7 +759,7 @@ class User
     {
         // var_dump($data);die();
         try {
-            $itemlist = $this->db->query('SELECT * from sellshopdb.sales_tb where st_id = :sid AND left(activity_date,10) = adddate(DATE(now()), INTERVAL -2 DAY) order by id asc limit 1');
+            $itemlist = $this->db->query('SELECT * from sales_tb where st_id = :sid AND left(activity_date,10) = adddate(DATE(now()), INTERVAL -2 DAY) order by id asc limit 1');
 
             $this->db->bind(':sid', $data);
 
@@ -997,10 +1019,10 @@ class User
                 $this->db->query('INSERT INTO customer_tb 
                 (customer_name,gender,phone_no,address,digital_address
                 ,email,family_size,brand_type,amount_bought,city,suburb
-                ,street_name,days_to_consume,buyorder_date,other_details,submitting_date) 
+                ,street_name,days_to_consume,buyorder_date,next_order_date,other_details,submitting_date) 
                 VALUES(:customer_name,:gender,:phone_no,:address,:digital_address
                 ,:email,:family_size,:brand_type,:amount_bought,:city,:suburb
-                ,:street_name,:days_to_consume,:buyorder_date,:other_details,:submitting_date)');
+                ,:street_name,:days_to_consume,:buyorder_date,:next_order_date,:other_details,:submitting_date)');
 
                 //Bind values
                 $this->db->bind(':customer_name', $data['customer_name']);
@@ -1017,6 +1039,7 @@ class User
                 $this->db->bind(':street_name', $data['street_name']);
                 $this->db->bind(':days_to_consume', $data['days_to_consume']);
                 $this->db->bind(':buyorder_date', $data['buyorder_date']);
+                $this->db->bind(':next_order_date', $data['next_order_date']);
                 $this->db->bind(':other_details', $data['other_details']);
                 $this->db->bind(':submitting_date', $data['submitting_date']);
                 //Execute function
@@ -1238,8 +1261,8 @@ class User
     public function insertavailstock($data)
     {
         $this->db->query('INSERT INTO stock_available 
-        (itemcat_type_id,item_type_id,brand_id,selling_type_id,number_added,unitcost_price,totalcost_price,selling_price,submitting_date,expiry_date,item_pic,wholesale_selling_price) 
-        VALUES(:itemcat_type_id,:item_type_id,:brand_id,:selling_type_id,:number_added,:unitcost_price,:totalcost_price,:selling_price,:submitting_date,:expiry_date,:item_pic,:wholesale_selling_price)');
+        (itemcat_type_id,item_type_id,brand_id,selling_type_id,number_added,unitcost_price,totalcost_price,selling_price,submitting_date,expiry_date,item_pic,wholesale_selling_price,barcode) 
+        VALUES(:itemcat_type_id,:item_type_id,:brand_id,:selling_type_id,:number_added,:unitcost_price,:totalcost_price,:selling_price,:submitting_date,:expiry_date,:item_pic,:wholesale_selling_price,:barcode)');
 
         //Bind values
         $this->db->bind(':itemcat_type_id', $data['itemcat_type_id']);
@@ -1252,6 +1275,7 @@ class User
         $this->db->bind(':selling_price', $data['selling_price']);
         $this->db->bind(':item_pic', $data['item_pic']);
         $this->db->bind(':expiry_date', $data['expiry_date']);
+        $this->db->bind(':barcode', $data['barcode']);
         $this->db->bind(':wholesale_selling_price', $data['wholesale_selling_price']);
         $this->db->bind(':submitting_date', $data['submitting_date']);
         //Execute function
@@ -1463,6 +1487,51 @@ class User
         }
     }
 
+    public function updatebarcode($data)
+    {
+        try {
+            $this->db->query('update stock_available set barcode = :barcode where id = :st_id ');
+            $this->db->bind(':barcode', $data['barcode']);
+            $this->db->bind(':st_id', $data['st_id']);
+            // $this->db->bind(':unit_amount', $data['unit_amount']);
+
+            if ($this->db->execute()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
+
+    public function gettotal_courses($sid)
+    {
+        $this->db->query("select * from brands
+        WHERE id='$sid' ORDER BY brand_name");
+
+        $result = $this->db->resultSet();
+
+        return $result;
+    }
+
+    public function checkbarcode($data)
+    {
+        // var_dump($data);die();
+        try {
+            $itemlist = $this->db->query('select *,t1.id FROM stock_available as t1 left join brands as t2 on t1.brand_id = t2.id
+            WHERE barcode = :barcode');
+
+            $this->db->bind(':barcode', $data['barcode']);
+
+            $items = $this->db->resultSet();
+            // var_dump($items);die();
+            return (int) $items > 0 ? $items : false;
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
+
     public function update_return($data)
     {
         try {
@@ -1508,7 +1577,7 @@ class User
         try {
             $itemlist = $this->db->query('update stock_available 
             set number_added = :number_added, unitcost_price = :unitcost_price, 
-            totalcost_price = :totalcost_price, selling_price = :selling_price, item_pic = :item_pic, expiry_date = :expiry_date, wholesale_selling_price = :wholesale_selling_price where id = :sid');
+            totalcost_price = :totalcost_price, selling_price = :selling_price, item_pic = :item_pic, expiry_date = :expiry_date, wholesale_selling_price = :wholesale_selling_price, barcode =:barcode where id = :sid');
 
             $this->db->bind(':number_added', $data2['totaladded']);
             $this->db->bind(':unitcost_price', $data['unitcost_price']);
@@ -1517,6 +1586,7 @@ class User
             $this->db->bind(':sid', $data2['stid']);
             $this->db->bind(':item_pic', $data['item_pic']);
             $this->db->bind(':wholesale_selling_price', $data['wholesale_selling_price']);
+            $this->db->bind(':barcode', $data['barcode']);
             $this->db->bind(':expiry_date', $data['expiry_date']);
 
             $items = $this->db->execute();

@@ -14,7 +14,8 @@ $supplier = $data['supplier'];
             height: 100%;
             margin: 0;
             padding: 0;
-            font-size: 40px !important;
+font-family: arial, helvetica,sans-serif;
+font-size: 40px !important;
         }
 
         #imgpri {
@@ -27,7 +28,8 @@ $supplier = $data['supplier'];
             height: auto;
             margin: 0;
             padding: 0;
-            font-size: 65px !important;
+font-family: arial, helvetica,sans-serif;
+font-size: 65px !important;
         }
 
         .modal .modal-dialog {
@@ -41,6 +43,7 @@ $supplier = $data['supplier'];
             height: auto;
             border: 10;
             border-radius: 10;
+            font-family: arial, helvetica,sans-serif;
             font-size: 40px !important;
         }
 
@@ -96,7 +99,7 @@ $supplier = $data['supplier'];
                     <!--Card content-->
                     <div class="card-body">
                         <div class="row">
-                            <div class="<?= (($grpid == 2 && !empty($cart)) ? 'col-7' : 'col-12') ?>">
+                            <div class="<?= ((!empty($cart)) ? 'col-7' : 'col-12') ?>">
                                 <table id="dtBasicExample" class="table table-striped table-bordered" cellspacing="0" width="100%">
                                     <thead class="table-sm table-dark">
                                         <tr>
@@ -137,21 +140,25 @@ $supplier = $data['supplier'];
                                                 <td><?= $key->selling_price; ?></td>
                                                 <td><?= $key->wholesale_selling_price; ?></td>
                                                 <?php if ($grpid == 1) : ?>
-                                                    <td><button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".addProduct" data-id="<?= $key->main_id; ?>" data-catid="<?= $key->itemcat_type_id; ?>" data-brandid="<?= $key->brand_id; ?>" data-itemid="<?= $key->item_type_id; ?>" data-sellingid="<?= $key->selling_type_id; ?>" data-entry="<?= $key->selling_price; ?>">Add Stock</button>
+                                                    <td><button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".addProduct" data-id="<?= $key->main_id; ?>" data-catid="<?= $key->itemcat_type_id; ?>" data-brandid="<?= $key->brand_id; ?>" data-itemid="<?= $key->item_type_id; ?>" data-sellingid="<?= $key->selling_type_id; ?>" data-entry="<?= $key->selling_price; ?>" data-barcode="<?= $key->barcode; ?>">Add Stock</button>
                                                         <button type="button" onclick="item_details(<?= $key->main_id; ?>)" class="btn btn-info btn-sm" data-toggle="modal">View Sale
                                                             Details</button>
                                                         <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target=".sellProduct" data-id="<?= $key->main_id; ?>" data-sale="Wholesale" data-entry="<?= $key->wholesale_selling_price; ?>">WholeSale
                                                             Input</button>
-                                                        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target=".sellProduct_price_change" data-id="<?= $key->main_id; ?>" data-entry="<?= $key->selling_price; ?>" data-toggle="tooltip" data-placement="right" title="Update Salling Price">Update Salling
+                                                        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target=".sellProduct_price_change" data-id="<?= $key->main_id; ?>" data-entry="<?= $key->selling_price; ?>" data-toggle="tooltip" data-placement="right" title="Update Selling Price">Update Selling
                                                             Price</button>
-                                                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target=".sellProduct" data-id="<?= $key->main_id; ?>" data-entry="<?= $key->selling_price; ?>" data-sale="Retail">Input
-                                                            Sale</button>
+                                                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target=".sellProduct" data-id="<?= $key->main_id; ?>" data-entry="<?= $key->selling_price; ?>" data-sale="Retail">Retail Input
+                                                            </button>
+                                                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target=".updateBarcode" data-id="<?= $key->main_id; ?>" data-entry="<?= $key->selling_price; ?>" data-sale="Barcode">Input
+                                                            Barcode</button>
                                                         <!-- <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".freeze" data-id="<?= $key->main_id; ?>" data-entry="stock_available" data-toggle="tooltip" data-placement="right" title="Freeze Stock">Freeze</button> -->
                                                         <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".delete" data-id="<?= $key->main_id; ?>" data-entry="stock_available" data-toggle="tooltip" data-placement="right" title="Delete Stock"><i class="fa fa-trash"></i></button>
                                                     </td>
                                                 <?php elseif ($grpid == 2) : ?>
-                                                    <td><button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target=".sellProduct" data-id="<?= $key->main_id; ?>" data-entry="<?= $key->selling_price; ?>" data-sale="Retail">Input
-                                                            Sale</button>
+                                                    <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target=".sellProduct" data-id="<?= $key->main_id; ?>" data-sale="Wholesale" data-entry="<?= $key->wholesale_selling_price; ?>">WholeSale
+                                                            Input</button>
+                                                    <td><button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target=".sellProduct" data-id="<?= $key->main_id; ?>" data-entry="<?= $key->selling_price; ?>" data-sale="Retail">Retail Input
+                                                            </button>
 
                                                     </td>
                                                 <?php endif; ?>
@@ -184,7 +191,7 @@ $supplier = $data['supplier'];
                                 </table>
                             </div>
                             <div class="col-1"></div>
-                            <?php if ($grpid == 2 && !empty($cart)) : ?>
+                            <?php if (!empty($cart)) : ?>
                                 <div class="col-4 mt-5">
                                     <table class="table" cellspacing="0">
                                         <thead class="table-sm">
@@ -230,6 +237,11 @@ $supplier = $data['supplier'];
                                         </tfoot>
                                     </table>
                                     <td>
+                                    <!-- <a onclick="Popup=window.open('printpage_new.php','Popup',
+                                    'toolbar=no,location=0,status=no,menubar=yes,scrollbars=yes,resizable=no, width=800,height=1000,left=400,top=250' ).focus(); return false;" 
+                                    class="btn waves-effect waves-light chip lighten-5 text-darken-4 blue blue-text mr-1 mb-1" href="javascript(void)">
+                                         Checkout
+                                    </a> -->
                                         <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target=".checkout" data-id="<?= $key->main_id; ?>" data-entry="<?= $key->selling_price; ?>">Checkout</button>
                                         <!-- <a href="print_item.php?<?= 'saleid=' . $key->id . '&orderno=' . $_SESSION['order_no'] . '&sta_id=' . $key->st_id; ?>"
                                         class="btn btn-danger btn-sm" data-id="<?= $key->id; ?>"
@@ -284,6 +296,47 @@ $supplier = $data['supplier'];
 </div>
 
 
+<div class="modal fade updateBarcode" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div id="notice">
+    </div>
+    <div class="modal-dialog modal-dialog-scrollable modal-notify modal-center modal-sm modal-success" role="document">
+        <div class="modal-content" style="border-radius: 10px 10px;">
+            <div class="modal-header bg-danger">
+                <h4 class="heading text-white animated flash delay-2s">Product Barcode
+                    <i class="fa fa-shopping-cart ml-1 animated rotateIn"></i>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" class="white-text">x</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <form action="" method="POST" id="barcodeform1" accept-charset="utf-8">
+                        <input type="hidden" name="st_id" id="recipientid">
+                        <input type="hidden" name="ptype" id="sale">
+                        <div class="md-form input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text md-addon" for="barcode">Barcode: </span>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Barcode" id="barcode" name="barcode" aria-describedby="barcode">
+                            <!-- <input type="text" onkeypress="checkint(event)" class="form-control" placeholder="Barcode" id="barcode"  name="barcode" aria-describedby="barcode"> -->
+                            <!-- <div class="input-group-append">
+                                <span class="input-group-text md-addon">GH&#8373;</span>
+                            </div> -->
+                        </div>
+
+                        <!--Footer-->
+                        <div class="modal-footer justify-content-center">
+                            <button type="submit" class="btn btn-sm btn-danger waves-effect animated bounce" id="submit" name="submit">Save<i class="far fa-gem ml-1 text-white"></i></button>
+                            <button type="button" class="btn btn-sm btn-outline-danger waves-effect animated bounce" data-dismiss="modal" onclick="closeModal('sellProduct')">No, Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade sellProduct" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div id="notice">
     </div>
@@ -315,7 +368,7 @@ $supplier = $data['supplier'];
                             <div class="input-group-prepend">
                                 <span class="input-group-text md-addon" for="amount_purchased1">No Bought: </span>
                             </div>
-                            <input type="text" onkeypress="checkint(event)" class="form-control" placeholder="Number Bought" autocomplete="off" id="amount_purchased1" onblur="calculate()" name="amount_purchased1" aria-describedby="amount_purchased1">
+                            <input type="text" onkeypress="checkint(event)" class="form-control" placeholder="Number Bought" autocomplete="off" id="amount_purchased1" onkeyup="calculate()" name="amount_purchased1" aria-describedby="amount_purchased1">
                         </div>
                         <div class="md-form input-group">
                             <div class="input-group-prepend">
@@ -332,7 +385,7 @@ $supplier = $data['supplier'];
                             </div>
                             <select class="browser-default custom-select form-control rounded" name="saletype" id="saletype">
                                 <option value="" style="color: #C3C3C3;" selected>Sale Type...</option>
-                                <option value="Blisters">Blisters</option>
+                                <option value="Singles">Singles</option>
                                 <option value="Pack">Pack</option>
                             </select>
                         </div>
@@ -424,6 +477,8 @@ $supplier = $data['supplier'];
                         <input type="hidden" name="brand_name" id="brand_name">
                         <input type="hidden" name="brand_type_name" id="brand_type">
                         <input type="hidden" name="buying_kind" id="buying_kd">
+                        <input type="hidden" name="barcode" id="barcode">
+                        
                         <div class="md-form input-group">
                             <div class="input-group-prepend">
                                 <span class="input-group-text md-addon" for="supplier">Supplier: </span>
@@ -522,8 +577,8 @@ $supplier = $data['supplier'];
     </div>
     <div class="modal-dialog modal-dialog-scrollable modal-notify modal-center modal-lg modal-success" role="document">
         <div class="modal-content" style="border-radius: 10px 10px;">
-            <div class="modal-header bg-danger">
-                <h1 class="heading text-center text-dark" id="thprint">LONDON BRIDGE PHARMACY</h1><br>
+            <div class="modal-header bg-danger text-center">
+                <h1 class="heading text-center text-dark" id="thprint"><?= SITENAME; ?></h1><br>
 
                 <h4 class="heading text-dark animated flash delay-2s text-center d-print-none">CHECKOUT
                     <i class="fa fa-shopping-cart ml-1 animated rotateIn"></i>
@@ -533,12 +588,13 @@ $supplier = $data['supplier'];
                 </button>
             </div>
             <div class="modal-body text-uppercase">
-                <hr>
-                <p>Tel: 0264840832 / 0598429459 <br>
-                    Location: Goil bypass service station Cape Coast<br>
-                    Printed at <?= date('H:i:s, d/m/Y'); ?>
+                
+                <p class="text-center">Tel: 0208173032 / 0249017952 <br>
+                    Location: Makola Cowlane Accra<br>
+
+                    <small>Printed at <?= date('H:i:s, d/m/Y'); ?></small>
                 </p>
-                <hr>
+                
                 <div>
                     <form action="" method="POST" id="checkoutfm" accept-charset="utf-8">
                         <table class="table" cellspacing="0" width="100%" id="tbprint">
@@ -574,16 +630,15 @@ $supplier = $data['supplier'];
                             </tfoot>
                         </table>
 
-                        <p class="d-none d-print-block"><br><br> ITEMS SOLD ARE NOT RETURNABLE
-                        </p>
-                        <br>
+                        <small class="d-none d-print-block">ITEMS SOLD ARE NOT RETURNABLE
+                                </small>
+                        
                         <p class="text-center">
-                            <img class="d-none d-print-block" id="imgpri" src="<?= URLROOT . '/public/img/lightbox/lbpharma.png'; ?>" width="200" height="200" alt="img">
+                            <img class="d-none d-print-block" id="imgpri" src="<?= URLROOT . '/public/img/lightbox/comedigitalize_barcode.png'; ?>" style="width: 100; height:auto;" alt="img">
                         </p>
 
-                        <br>
 
-                        <p class="d-none d-print-block mb-3">COMEDIGITALIZE.COM</p>
+                        <small class="d-none d-print-block mb-3">COMEDIGITALIZE.COM</small>
 
                         <div class="modal-footer justify-content-center d-print-none">
                             <!-- <button type="hidden" class="btn btn-sm btn-danger waves-effect animated bounce" id="submit" name="submit">Checkout<i class="far fa-gem ml-1 text-white"></i></button>-->
@@ -626,17 +681,17 @@ require APPROOT . '/views/includes/footer.php';
                         var response = JSON.parse(data);
                         // console.log(response.status);
                         if (response.status == 'success') {
-                            Swal.fire({
-                                type: 'success',
-                                title: 'Hey Nice One!!!',
-                                html: '<span class="text-danger">' + response.message +
-                                    '</span>',
-                                showConfirmButton: false,
-                                width: 400,
-                                timer: 3000
-                            }).then(function() {
-                                location.reload();
-                            });
+                            // Swal.fire({
+                            //     type: 'success',
+                            //     title: 'Hey Nice One!!!',
+                            //     html: '<span class="text-danger">' + response.message +
+                            //         '</span>',
+                            //     showConfirmButton: false,
+                            //     width: 400,
+                            //     timer: 3000
+                            // }).then(function() {
+                            location.reload();
+                            // });
                         } else if (response.status == 'error') {
                             Swal.fire({
                                 type: 'error',
@@ -672,6 +727,18 @@ require APPROOT . '/views/includes/footer.php';
         });
     }
     $(".sellProduct").on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget);
+        var promo_id = button.data('id');
+        var promo_stage = button.data('entry');
+        var promo_sale = button.data('sale');
+
+        var modal = $(this);
+        modal.find('.modal-body #recipientid').val(promo_id);
+        modal.find('.modal-body #itemname').val(promo_stage);
+        modal.find('.modal-body #sale').val(promo_sale);
+    });
+
+    $(".updateBarcode").on('show.bs.modal', function(event) {
         var button = $(event.relatedTarget);
         var promo_id = button.data('id');
         var promo_stage = button.data('entry');
@@ -738,6 +805,7 @@ require APPROOT . '/views/includes/footer.php';
         var product_type = button.data('brandid');
         var brand_type_name = button.data('itemid');
         var buying_kind = button.data('sellingid');
+        var barcode = button.data('barcode');
 
         var modal = $(this);
         modal.find('.modal-body #recipientid').val(promo_id);
@@ -746,6 +814,7 @@ require APPROOT . '/views/includes/footer.php';
         modal.find('.modal-body #product_tp').val(product_type);
         modal.find('.modal-body #brand_type').val(brand_type_name);
         modal.find('.modal-body #buying_kd').val(buying_kind);
+        modal.find('.modal-body #barcode').val(barcode);
     });
 
     function closeModal(id) {

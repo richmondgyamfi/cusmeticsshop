@@ -78,10 +78,147 @@ class Pages extends Controller
             $this->userModel->insertstockdaily($data1);
 
             if ($_SESSION['group_id'] == 1) {
+                $activity = 'Sold item user_id ' . $_POST['user_id'] . ' data: ' .
+                    ' stockavailable: ' . $stockavailable .
+                    ' orders: ' . $orders .
+                    ' data: ' . $gdata .
+                    ' stdata: ' . $stdata .
+                    ' totalsale: ' . $totalsale .
+                    ' newu: ' . $newu .
+                    ' brands: ' . $brands .
+                    ' supplier: ' . $supplier .
+                    ' cusdata: ' . $cusdata .
+                    ' selling_type: ' . $selling_type .
+                    ' category_type: ' . $category_type .
+                    ' item_type: ' . $item_type .
+                    ' cusdata: ' . $cusdata .
+                    ' users: ' . $users;
+                $data2 = [
+                    'activity' => $activity,
+                    'username' => trim($_SESSION['username']),
+                    'table' => trim('stock_available')
+                ];
+                $logdata = $this->userModel->log_activity($data2);
                 $this->view('/pages/admin', $data);
             } else {
                 $this->view('/pages/checkst', $data);
             }
+        } else {
+            unset($_SESSION['user_id']);
+            unset($_SESSION['username']);
+            unset($_SESSION['group_id']);
+            unset($_SESSION['name']);
+            header('location:' . URLROOT . '/users/login.php');
+        }
+    }
+
+    public function barcode()
+    {
+        $tdate = $this->userModel->todaydate();
+        foreach ($tdate as $nowdate) {
+            $tdate = $nowdate->nowdate;
+        }
+        $value = explode('-', $tdate);
+        $val = $value[0] . $value[1] . $value[2];
+        $stockavailable = $this->userModel->stockavailable();
+        // $orderno = $this->userFunctions->orderno();
+        if (!empty($_SESSION['order_no'])) {
+            $orders = $this->userModel->orders($_SESSION['order_no']);
+            $orderno = $_SESSION['order_no'];
+        } else {
+            $orderno = $this->userFunctions->orderno();
+            $_SESSION['order_no'] = $orderno;
+            $orders = $this->userModel->orders($_SESSION['order_no']);
+        }
+        // echo $_SESSION['order_no'];die();
+        $newu = $this->userModel->cusdata($val);
+        $gdata = $this->userModel->getbrands();
+        $data = [
+            'tdate' => trim($tdate),
+            'tdate1' => trim($tdate)
+        ];
+        $stdata = $this->userModel->getreport($data);
+        $totalsale = $this->userModel->totalsale();
+        $brands = $this->userModel->totalbrand();
+        $supplier = $this->userModel->totalsupplier();
+        $cusdata = $this->userModel->totalcustomer();
+        $users = $this->userModel->totalusers();
+        $selling_type = $this->userModel->selling_type();
+        $category_type = $this->userModel->category_type();
+        $item_type = $this->userModel->item_type();
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+            // var_dump($_POST);
+            // die();
+            $data1 = [
+                'title' => 'Barcode page',
+                'page' => 'barpage',
+                'barcode' => $_POST['barcode']
+            ];
+            $checkbarcode = $this->userModel->checkbarcode($data1);
+            foreach ($checkbarcode as $kaya) {
+            };
+            $data = [
+                'brand_name' => $kaya->brand_name,
+                'barcode_data' => $checkbarcode
+            ];
+            echo json_encode($data);
+        } elseif (isset($_SESSION['user_id'])) {
+            $data = [
+                'title' => 'Barcode page',
+                'page' => 'barpage',
+                'stockavailable' => $stockavailable,
+                'orders' => $orders,
+                'data' => $gdata,
+                'stdata' => $stdata,
+                'totalsale' => $totalsale,
+                'newu' => $newu,
+                'brands' => $brands,
+                'supplier' => $supplier,
+                'cusdata' => $cusdata,
+                'selling_type' => $selling_type,
+                'category_type' => $category_type,
+                'item_type' => $item_type,
+                'users' => $users
+            ];
+            // var_dump($_SESSION);die();
+
+            $stockavailable = $this->userModel->stockavailable();
+
+
+            $totalstr = 0;
+            $totalno = 0;
+            foreach ($stockavailable as $stockava) {
+                $totalno += $stockava->number_added;
+                $totalstr += $stockava->totalsp;
+            }
+            $data1 = [
+                'totalno' => $totalno,
+                'totalstr' => $totalstr
+            ];
+            $this->userModel->insertstockdaily($data1);
+            $activity = 'Sold item user_id with barcode ' . $_POST['user_id'] . ' data: ' .
+                ' stockavailable: ' . $stockavailable .
+                ' orders: ' . $orders .
+                ' data: ' . $gdata .
+                ' stdata: ' . $stdata .
+                ' totalsale: ' . $totalsale .
+                ' newu: ' . $newu .
+                ' brands: ' . $brands .
+                ' supplier: ' . $supplier .
+                ' cusdata: ' . $cusdata .
+                ' selling_type: ' . $selling_type .
+                ' category_type: ' . $category_type .
+                ' item_type: ' . $item_type .
+                ' users: ' . $users;
+            $data2 = [
+                'activity' => $activity,
+                'username' => trim($_SESSION['username']),
+                'table' => trim('stock_available')
+            ];
+            $logdata = $this->userModel->log_activity($data2);
+
+            $this->view('/pages/barcode', $data);
         } else {
             unset($_SESSION['user_id']);
             unset($_SESSION['username']);
@@ -148,29 +285,124 @@ class Pages extends Controller
     public function checkst()
     {
         if (isset($_SESSION['user_id'])) {
+            $tdate = $this->userModel->todaydate();
+            foreach ($tdate as $nowdate) {
+                $tdate = $nowdate->nowdate;
+            }
+            $value = explode('-', $tdate);
+            $val = $value[0] . $value[1] . $value[2];
             $stockavailable = $this->userModel->stockavailable();
-            // var_dump($stockavailable);die();
+            // $orderno = $this->userFunctions->orderno();
+            if (!empty($_SESSION['order_no'])) {
+                $orders = $this->userModel->orders($_SESSION['order_no']);
+                $orderno = $_SESSION['order_no'];
+            } else {
+                $orderno = $this->userFunctions->orderno();
+                $_SESSION['order_no'] = $orderno;
+                $orders = $this->userModel->orders($_SESSION['order_no']);
+            }
+            // echo $_SESSION['order_no'];die();
+            $newu = $this->userModel->cusdata($val);
+            $gdata = $this->userModel->getbrands();
+            $data = [
+                'tdate' => trim($tdate),
+                'tdate1' => trim($tdate)
+            ];
+            $stdata = $this->userModel->getreport($data);
+            $totalsale = $this->userModel->totalsale();
             $brands = $this->userModel->totalbrand();
             $supplier = $this->userModel->totalsupplier();
+            $cusdata = $this->userModel->totalcustomer();
+            $users = $this->userModel->totalusers();
             $selling_type = $this->userModel->selling_type();
             $category_type = $this->userModel->category_type();
             $item_type = $this->userModel->item_type();
-            $orderno = $this->userFunctions->orderno();
-            $_SESSION['order_no'] = $orderno;
-            $orders = $this->userModel->orders($orderno);
-            // var_dump($orders);die();
+            $cusdata = $this->userModel->totalcustomer();
+            // var_dump($selling_type);die();
+            // if (isset($_SESSION['user_id'])) {
             $data = [
+                'title' => 'Home page',
+                'page' => 'stocks',
                 'stockavailable' => $stockavailable,
                 'orders' => $orders,
+                'data' => $gdata,
+                'stdata' => $stdata,
+                'totalsale' => $totalsale,
+                'newu' => $newu,
                 'brands' => $brands,
                 'supplier' => $supplier,
                 'selling_type' => $selling_type,
                 'category_type' => $category_type,
                 'item_type' => $item_type,
-                'title' => 'Home page',
-                'page' => 'stocks'
+                'cusdata' => $cusdata,
+                'users' => $users
             ];
             $this->view('/pages/checkst', $data);
+        } else {
+            unset($_SESSION['user_id']);
+            unset($_SESSION['username']);
+            unset($_SESSION['group_id']);
+            unset($_SESSION['name']);
+            header('location:' . URLROOT . '/users/login.php');
+        }
+    }
+
+    public function printpage_new()
+    {
+        if (isset($_SESSION['user_id'])) {
+            $tdate = $this->userModel->todaydate();
+            foreach ($tdate as $nowdate) {
+                $tdate = $nowdate->nowdate;
+            }
+            $value = explode('-', $tdate);
+            $val = $value[0] . $value[1] . $value[2];
+            $stockavailable = $this->userModel->stockavailable();
+            // $orderno = $this->userFunctions->orderno();
+            if (!empty($_SESSION['order_no'])) {
+                $orders = $this->userModel->orders($_SESSION['order_no']);
+                $orderno = $_SESSION['order_no'];
+            } else {
+                $orderno = $this->userFunctions->orderno();
+                $_SESSION['order_no'] = $orderno;
+                $orders = $this->userModel->orders($_SESSION['order_no']);
+            }
+            // echo $_SESSION['order_no'];die();
+            $newu = $this->userModel->cusdata($val);
+            $gdata = $this->userModel->getbrands();
+            $data = [
+                'tdate' => trim($tdate),
+                'tdate1' => trim($tdate)
+            ];
+            $stdata = $this->userModel->getreport($data);
+            $totalsale = $this->userModel->totalsale();
+            $brands = $this->userModel->totalbrand();
+            $supplier = $this->userModel->totalsupplier();
+            $cusdata = $this->userModel->totalcustomer();
+            $users = $this->userModel->totalusers();
+            $selling_type = $this->userModel->selling_type();
+            $category_type = $this->userModel->category_type();
+            $item_type = $this->userModel->item_type();
+            $cusdata = $this->userModel->totalcustomer();
+            // var_dump($selling_type);die();
+            // if (isset($_SESSION['user_id'])) {
+            $data = [
+                'title' => 'Home page',
+                'page' => 'stocks',
+                'stockavailable' => $stockavailable,
+                'orders' => $orders,
+                'data' => $gdata,
+                'stdata' => $stdata,
+                'totalsale' => $totalsale,
+                'newu' => $newu,
+                'brands' => $brands,
+                'supplier' => $supplier,
+                'selling_type' => $selling_type,
+                'category_type' => $category_type,
+                'item_type' => $item_type,
+                'cusdata' => $cusdata,
+                'users' => $users
+            ];
+            $this->view('/pages/printpage_new', $data);
         } else {
             unset($_SESSION['user_id']);
             unset($_SESSION['username']);
@@ -535,12 +767,15 @@ class Pages extends Controller
                     'tdate1' => trim($_POST['to'])
                 ];
                 $stdata = $this->userModel->getreport($data);
-                // var_dump($_POST);die();
+                $saleslist_indvidual_report = $this->userModel->saleslist_indvidual_report($data);
+                // var_dump($saleslist_indvidual_report);
+                // die();
                 $data = [
                     'tdate' => trim($_POST['from']),
                     'tdate1' => trim($_POST['to']),
                     'title' => 'Home page',
                     'page' => 'report',
+                    'saleslist_indvidual_report' => $saleslist_indvidual_report,
                     'brands' => $brands,
                     'supplier' => $supplier,
                     'stdata' => $stdata,
@@ -762,6 +997,7 @@ class Pages extends Controller
                     'invoice_no' => trim($_POST['invoice_no']),
                     'supplier_id' => trim($_POST['supplier']),
                     'expiry_date' => trim($_POST['expiry_date']),
+                    'barcode' => trim($_POST['barcode']),
                     'submitting_date' => $stdate,
                     'item_pic' => $add_img,
                     'brand_id' => trim($_POST['brand_type_name']),
@@ -771,7 +1007,14 @@ class Pages extends Controller
 
 
                 // if (($data['itemcat_type_id'] == 1) && !empty($data['item_type_id'])) {
-                if (!empty($data['brand_id'])) {
+                $checkbarcode = $this->userModel->checkbarcode($data);
+
+                if ($checkbarcode) {
+                    $data1 = [
+                        'status' => 'error',
+                        'message' => 'BARCODE ALREADY EXIST!!!'
+                    ];
+                } elseif (!empty($data['brand_id'])) {
                     //find and insert with pro_type
                     $stdata = $this->userModel->checkdata($data);
                     $feetb_update = $this->userModel->insertstock($data);
@@ -834,6 +1077,31 @@ class Pages extends Controller
                             'totalstr' => $totalstr
                         ];
                         $this->userModel->insertstockdaily($data1);
+                        $activity = 'Added item with data: ' .
+                            ' itemcat_type_id: ' . trim($_POST['product_category_type']) .
+                            ' item_type_id: ' . trim($_POST['product_type']) .
+                            ' brand_name: ' . trim($_POST['brand_name']) .
+                            ' selling_type_id: ' . trim($_POST['buying_kind']) .
+                            ' number_added: ' . trim($_POST['no_added']) .
+                            ' unitcost_price: ' . trim($_POST['unit_price']) .
+                            ' totalcost_price: ' . trim($_POST['total_price']) .
+                            ' selling_price: ' . trim($_POST['selling_price']) .
+                            ' wholesale_selling_price: ' . trim($_POST['wholesale_selling_price']) .
+                            ' invoice_no: ' . trim($_POST['invoice_no']) .
+                            ' supplier_id: ' . trim($_POST['supplier']) .
+                            ' expiry_date: ' . trim($_POST['expiry_date']) .
+                            ' barcode: ' . trim($_POST['barcode']) .
+                            ' submitting_date: ' . $stdate .
+                            ' item_pic: ' . $add_img .
+                            ' brand_id: ' . trim($_POST['brand_type_name']) .
+                            ' username: ' . $_SESSION['username'];
+                        $data2 = [
+                            'activity' => $activity,
+                            'username' => trim($_SESSION['username']),
+                            'table' => trim('stock_tb')
+                        ];
+                        $logdata = $this->userModel->log_activity($data2);
+
                         $data1 = [
                             'status' => 'success',
                             'message' => 'STOCK ADDED SUCCESSFULLY!!!'
@@ -860,6 +1128,7 @@ class Pages extends Controller
                             'wholesale_selling_price' => trim($_POST['wholesale_selling_price']),
                             'invoice_no' => trim($_POST['invoice_no']),
                             'expiry_date' => trim($_POST['expiry_date']),
+                            'barcode' => trim($_POST['barcode']),
                             'supplier_id' => trim($_POST['supplier']),
                             'submitting_date' => $stdate,
                             'item_pic' => $add_img,
@@ -886,6 +1155,30 @@ class Pages extends Controller
                         ];
                         $this->userModel->insertstockdaily($data1);
 
+                        $activity = 'Added item with data: ' .
+                            ' itemcat_type_id: ' . trim($_POST['product_category_type']) .
+                            ' item_type_id: ' . trim($_POST['product_type']) .
+                            ' brand_name: ' . trim($_POST['brand_name']) .
+                            ' pcs_in_ctn: ' . trim($_POST['pcs_in_ctn']) .
+                            ' number_added: ' . trim($_POST['no_added']) .
+                            ' unitcost_price: ' . trim($_POST['unit_price']) .
+                            ' totalcost_price: ' . trim($_POST['total_price']) .
+                            ' selling_price: ' . trim($_POST['selling_price']) .
+                            ' wholesale_selling_price: ' . trim($_POST['wholesale_selling_price']) .
+                            ' invoice_no: ' . trim($_POST['invoice_no']) .
+                            ' supplier_id: ' . trim($_POST['supplier']) .
+                            ' expiry_date: ' . trim($_POST['expiry_date']) .
+                            ' barcode: ' . trim($_POST['barcode']) .
+                            ' submitting_date: ' . $stdate .
+                            ' item_pic: ' . $add_img .
+                            ' brand_id: ' . trim($_POST['brand_type_name']) .
+                            ' username: ' . $_SESSION['username'];
+                        $data2 = [
+                            'activity' => $activity,
+                            'username' => trim($_SESSION['username']),
+                            'table' => trim('stock_tb')
+                        ];
+                        $logdata = $this->userModel->log_activity($data2);
                         $data1 = [
                             'status' => 'success',
                             'message' => 'STOCK ADDED SUCCESSFULLY!!!'
@@ -973,6 +1266,7 @@ class Pages extends Controller
                     'invoice_no' => trim($_POST['invoice_no']),
                     'expiry_date' => trim($_POST['expiry_date']),
                     'supplier_id' => trim($_POST['supplier']),
+                    'barcode' => trim($_POST['barcode']),
                     'submitting_date' => $stdate,
                     'item_pic' => $add_img,
                     'brand_id' => trim($_POST['brand_type_name']),
@@ -1014,6 +1308,31 @@ class Pages extends Controller
                             'totalstr' => $totalstr
                         ];
                         $this->userModel->insertstockdaily($data1);
+                        $activity = 'Updates item with data: ' .
+                            ' itemcat_type_id: ' . trim($_POST['product_category_type']) .
+                            ' st_id: ' . trim($_POST['st_id']) .
+                            ' item_type_id: ' . trim($_POST['product_type']) .
+                            ' brand_name: ' . trim($_POST['brand_name']) .
+                            ' selling_type_id: ' . trim($_POST['buying_kind']) .
+                            ' number_added: ' . trim($_POST['no_added']) .
+                            ' unitcost_price: ' . trim($_POST['unit_price']) .
+                            ' totalcost_price: ' . trim($_POST['total_price']) .
+                            ' selling_price: ' . trim($_POST['selling_price']) .
+                            ' wholesale_selling_price: ' . trim($_POST['wholesale_selling_price']) .
+                            ' invoice_no: ' . trim($_POST['invoice_no']) .
+                            ' expiry_date: ' . trim($_POST['expiry_date']) .
+                            ' supplier_id: ' . trim($_POST['supplier']) .
+                            ' barcode: ' . trim($_POST['barcode']) .
+                            ' submitting_date: ' . $stdate .
+                            ' item_pic: ' . $add_img .
+                            ' brand_id: ' . trim($_POST['brand_type_name']) .
+                            ' username: ' . $_SESSION['username'];
+                        $data2 = [
+                            'activity' => $activity,
+                            'username' => trim($_SESSION['username']),
+                            'table' => trim('stock_tb')
+                        ];
+                        $logdata = $this->userModel->log_activity($data2);
                         $data1 = [
                             'status' => 'success',
                             'message' => 'STOCK ADDED SUCCESSFULLY!!!'
@@ -1071,6 +1390,19 @@ class Pages extends Controller
                 $stdata = $this->userModel->supplierquery($data);
                 // var_dump($stdata);die();
                 if ($stdata == TRUE) {
+                    $activity = 'Added Supplier with data: ' .
+                        ' suppliers_name: ' . trim($_POST['supplier_name']) .
+                        ' business_name: ' . trim($_POST['business_name']) .
+                        ' phone_no: ' . trim($_POST['phone_no']) .
+                        ' email: ' . trim($_POST['email']) .
+                        ' address: ' . trim($_POST['business_address']) .
+                        ' submitting_date: ' . $stdate;
+                    $data2 = [
+                        'activity' => $activity,
+                        'username' => trim($_SESSION['username']),
+                        'table' => trim('suppliers_tb')
+                    ];
+                    $logdata = $this->userModel->log_activity($data2);
                     $data1 = [
                         'status' => 'success',
                         'message' => 'SUPPLIER ADDED SUCCESSFULLY!!!'
@@ -1110,6 +1442,15 @@ class Pages extends Controller
                 }
                 // var_dump($stdata);die();
                 if ($stdata == TRUE) {
+                    $activity = 'Added product with data: ' .
+                        'type' . trim($_POST['type']) .
+                        'pname' . trim($_POST['pname']);
+                    $data2 = [
+                        'activity' => $activity,
+                        'username' => trim($_SESSION['username']),
+                        'table' => trim('suppliers_tb')
+                    ];
+                    $logdata = $this->userModel->log_activity($data2);
                     $data1 = [
                         'status' => 'success',
                         'message' => 'NAME ADDED SUCCESSFULLY!!!'
@@ -1152,12 +1493,37 @@ class Pages extends Controller
                     'street_name' => trim($_POST['street_name']),
                     'days_to_consume' => trim($_POST['days_to_consume']),
                     'buyorder_date' => trim($_POST['buy_order_date']),
+                    'next_order_date' => trim($_POST['next_order_date']),
                     'other_details' => trim($_POST['other_details']),
                     'submitting_date' => $stdate
                 ];
                 $stdata = $this->userModel->customerquery($data);
                 // var_dump($stdata);die();
                 if ($stdata == TRUE) {
+                    $activity = 'Added customer with data: ' .
+                        ' customer_name: ' . trim($_POST['customer_name']) .
+                        ' gender: ' . trim($_POST['cus_gender']) .
+                        ' phone_no: ' . trim($_POST['phone_number']) .
+                        ' address: ' . trim($_POST['home_address']) .
+                        ' digital_address: ' . trim($_POST['digital_address']) .
+                        ' email: ' . trim($_POST['cus_email']) .
+                        ' family_size: ' . trim($_POST['family_size']) .
+                        ' brand_type: ' . trim($_POST['brand_type']) .
+                        ' amount_bought: ' . trim($_POST['no_bought']) .
+                        ' city: ' . trim($_POST['city_name']) .
+                        ' suburb: ' . trim($_POST['suburb']) .
+                        ' street_name: ' . trim($_POST['street_name']) .
+                        ' days_to_consume: ' . trim($_POST['days_to_consume']) .
+                        ' buyorder_date: ' . trim($_POST['buy_order_date']) .
+                        ' next_order_date: ' . trim($_POST['next_order_date']) .
+                        ' other_details: ' . trim($_POST['other_details']) .
+                        ' submitting_date: ' . $stdate;
+                    $data2 = [
+                        'activity' => $activity,
+                        'username' => trim($_SESSION['username']),
+                        'table' => trim('suppliers_tb')
+                    ];
+                    $logdata = $this->userModel->log_activity($data2);
                     $data1 = [
                         'status' => 'success',
                         'message' => 'CUSTOMER ADDED SUCCESSFULLY!!!'
@@ -1193,6 +1559,16 @@ class Pages extends Controller
                 $addexpenses = $this->userModel->addexpenses($data);
                 // var_dump($addexpenses);die();
                 if ($addexpenses == TRUE) {
+                    $activity = 'Added expenses with data: ' .
+                        ' exp_name: ' . trim($_POST['exp_name']) .
+                        ' amount: ' . trim($_POST['amount']) .
+                        ' userid: ' . trim($_SESSION['user_id']);
+                    $data2 = [
+                        'activity' => $activity,
+                        'username' => trim($_SESSION['username']),
+                        'table' => trim('expenses')
+                    ];
+                    $logdata = $this->userModel->log_activity($data2);
                     $data1 = [
                         'status' => 'success',
                         'message' => 'EXPENSES ADDED SUCCESSFULLY!!!'
@@ -1281,6 +1657,28 @@ class Pages extends Controller
                 $stdata = $this->userModel->userquery($data);
                 // var_dump($stdata);die();
                 if ($stdata == TRUE) {
+                    $activity = 'Added a user data: ' .
+                        ' fname: ' . trim($_POST['fname']) .
+                        ' lname: ' . trim($_POST['lname']) .
+                        ' other_name: ' . trim($_POST['othername']) .
+                        ' dob: ' . trim($_POST['birth_date']) .
+                        ' phone_no: ' . trim($_POST['user_phone_no']) .
+                        ' group_id: ' . trim($_POST['role']) .
+                        ' email: ' . trim($_POST['user_email']) .
+                        ' address: ' . trim($_POST['user_address']) .
+                        ' city_name: ' . trim($_POST['user_city']) .
+                        ' suburb: ' . trim($_POST['user_suburb']) .
+                        ' gender: ' . trim($_POST['gender']) .
+                        ' username: ' . $username .
+                        ' password: ' . $password .
+                        ' name: ' . $name .
+                        ' submitting_date: ' . $stdate;
+                    $data2 = [
+                        'activity' => $activity,
+                        'username' => trim($_SESSION['username']),
+                        'table' => trim('users_tb')
+                    ];
+                    $logdata = $this->userModel->log_activity($data2);
                     $data1 = [
                         'status' => 'success',
                         'message' => 'USER ADDED SUCCESSFULLY!!!'
